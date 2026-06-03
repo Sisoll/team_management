@@ -1,0 +1,14 @@
+[
+  {
+    "responseId": "resp-001",
+    "gameId": "game-league-home",
+    "userId": "u-player-1",
+    "responseStatus": "attending"
+  },
+  {
+    "responseId": "resp-002",
+    "gameId": "game-live-friendly",
+    "userId": "u-player-2",
+    "responseStatus": "tentative"
+  }
+]

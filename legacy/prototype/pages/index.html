@@ -1,0 +1,81 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>棒壘球紀錄平台 - Web 首頁</title>
+  <link rel="stylesheet" href="../assets/css/tokens.css">
+  <link rel="stylesheet" href="../assets/css/web.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/brand/favicon.svg">
+</head>
+<body class="web-page">
+  <div class="shell">
+    <header id="site-header"></header>
+    <main id="page-root" class="stack"></main>
+  </div>
+  <script type="module">
+    import { initWebPage, renderHeroStats, renderList } from "../assets/js/web/common.js";
+    import { getCurrentTeam } from "../assets/js/core/mock-store.js";
+    import { getCurrentUser, getJoinedTeams, getLinkedPlayersForUser } from "../assets/js/core/permission-engine.js";
+
+    const { root, state } = initWebPage({
+      moduleId: "index",
+      title: "棒壘球紀錄平台",
+      description: "登入後先從行事曆首頁進入日常操作，再依需要切換球隊、身分與管理入口。"
+    });
+
+    const currentUser = getCurrentUser(state);
+    const currentTeam = getCurrentTeam(state, { fallback: false });
+    const joinedTeams = getJoinedTeams(state);
+    const linkedPlayers = getLinkedPlayersForUser(state, currentUser.userId);
+
+    const nextSteps = [
+      { title: "1. 先看個人首頁", detail: "登入後預設維持個人視角，先看到自己的賽程與通知。" },
+      { title: "2. 再切球隊", detail: "若你同時屬於多支球隊，再從右上角切到指定球隊。" },
+      { title: "3. 最後切身分", detail: "在球隊脈絡下切換管理者、教練或球員身分，確認入口差異。" }
+    ];
+
+    root.innerHTML = `
+      <section class="module-card">
+        <div class="eyebrow">入口首頁</div>
+        <h2>${currentUser.displayName}，目前從 ${currentTeam ? currentTeam.teamName : "個人視角"} 進入</h2>
+        <p>這一頁不再是模組總表，而是用來說明你現在會先看到什麼，以及應該怎麼往下操作。</p>
+        ${renderHeroStats([
+          { label: "所屬球隊", value: joinedTeams.length },
+          { label: "可切換身分", value: currentTeam ? (currentUser.teamRoles[currentTeam.teamId] || []).length : 1 },
+          { label: "已連結球員", value: linkedPlayers.length }
+        ])}
+      </section>
+      <section class="page-layout">
+        <div class="stack">
+          <section class="module-card">
+            <div class="eyebrow">你下一步會做什麼</div>
+            <div class="quick-grid">
+              <a class="quick-link" href="calendar.html"><strong>前往行事曆首頁</strong><span>從個人賽程或球隊賽程開始。</span></a>
+              <a class="quick-link" href="stats.html"><strong>查看統計</strong><span>${linkedPlayers.length ? "目前可直接看個人成績。" : "可先確認個人成績入口與空狀態。"}</span></a>
+              <a class="quick-link" href="auth.html"><strong>切換帳號</strong><span>改用球員、紀錄員或新手帳號檢查差異。</span></a>
+            </div>
+          </section>
+          <section class="module-card">
+            <div class="eyebrow">使用流程</div>
+            ${renderList(nextSteps.map((step) => `<div class="list-item"><strong>${step.title}</strong><p class="subtle">${step.detail}</p></div>`))}
+          </section>
+        </div>
+        <aside class="stack">
+          <section class="module-card">
+            <div class="eyebrow">目前上下文</div>
+            <p>登入者：${currentUser.displayName}</p>
+            <p>球隊：${currentTeam ? currentTeam.teamName : "尚未選擇"}</p>
+            <p>身分：${currentTeam ? (currentUser.teamRoles[currentTeam.teamId] || []).join(" / ") : "個人視角"}</p>
+          </section>
+          <section class="module-card">
+            <div class="eyebrow">驗證重點</div>
+            <p>右上角一定要能完成登入、切球隊、切身分；未選球隊時，不應直接看到球隊層級資料。</p>
+          </section>
+        </aside>
+      </section>
+    `;
+  </script>
+</body>
+</html>
+

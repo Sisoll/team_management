@@ -1,0 +1,26 @@
+[
+  {
+    "playerId": "p-01",
+    "displayName": "王家樂",
+    "uniformNumber": "7",
+    "linkedUserId": "u-player-1",
+    "accountLinkStatus": "linked",
+    "rosterStatus": "active"
+  },
+  {
+    "playerId": "p-03",
+    "displayName": "陳冠廷",
+    "uniformNumber": "18",
+    "linkedUserId": null,
+    "accountLinkStatus": "unlinked",
+    "rosterStatus": "active"
+  },
+  {
+    "playerId": "p-04",
+    "displayName": "張庭瑋",
+    "uniformNumber": "23",
+    "linkedUserId": null,
+    "accountLinkStatus": "pending",
+    "rosterStatus": "inactive"
+  }
+]

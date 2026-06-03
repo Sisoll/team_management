@@ -1,0 +1,15 @@
+[
+  {
+    "teamId": "team-seabreeze",
+    "teamName": "台北海風",
+    "sportType": "softball",
+    "teamStatus": "active",
+    "invitations": [
+      {
+        "userId": "u-player-2",
+        "status": "邀請中",
+        "roles": ["player"]
+      }
+    ]
+  }
+]

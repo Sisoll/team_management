@@ -1,0 +1,24 @@
+[
+  {
+    "calendarEntryId": "cal-001",
+    "gameId": "game-league-home",
+    "entryStatus": "已排程",
+    "responseSummary": {
+      "attending": 9,
+      "declined": 1,
+      "tentative": 2,
+      "unanswered": 3
+    }
+  },
+  {
+    "calendarEntryId": "cal-002",
+    "gameId": "game-live-friendly",
+    "entryStatus": "進行中",
+    "responseSummary": {
+      "attending": 12,
+      "declined": 0,
+      "tentative": 1,
+      "unanswered": 1
+    }
+  }
+]

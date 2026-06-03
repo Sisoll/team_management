@@ -1,128 +1,91 @@
-# Feature Specification: [FEATURE NAME]
+# 功能規格：[FEATURE NAME]
 
-**Feature Branch**: `[###-feature-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
-**Input**: User description: "$ARGUMENTS"
+**功能分支**：`[###-feature-name]`  
+**建立日期**：[DATE]  
+**狀態**：草稿  
+**輸入**：使用者需求描述：「$ARGUMENTS」
 
-## User Scenarios & Testing *(mandatory)*
+## 使用者情境與測試（必要）
 
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
+> 使用者故事必須依優先序排列，且每個故事都必須能獨立展示與驗證。
+> 如同時包含網頁與 APP 情境，需在故事中明確描述兩種介面的操作與展示差異。
 
-### User Story 1 - [Brief Title] (Priority: P1)
+### 使用者故事 1 - [簡短標題]（優先度：P1）
 
-[Describe this user journey in plain language]
+[以台灣繁體中文描述主要操作旅程]
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**優先原因**：[說明此故事的核心價值]
 
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
+**獨立驗證方式**：[描述如何只靠此故事對應的網頁頁面、APP 畫面與展示資料完成驗證]
 
-**Acceptance Scenarios**:
+**驗收情境**：
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** [初始狀態]，**When** [操作行為]，**Then** [預期展示結果]
+2. **Given** [初始狀態]，**When** [操作行為]，**Then** [預期展示結果]
 
 ---
 
-### User Story 2 - [Brief Title] (Priority: P2)
+### 使用者故事 2 - [簡短標題]（優先度：P2）
 
-[Describe this user journey in plain language]
+[描述次要但獨立可展示的操作旅程]
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**優先原因**：[說明此故事的價值]
 
-**Independent Test**: [Describe how this can be tested independently]
+**獨立驗證方式**：[描述如何驗證]
 
-**Acceptance Scenarios**:
+**驗收情境**：
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-
----
-
-### User Story 3 - [Brief Title] (Priority: P3)
-
-[Describe this user journey in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be tested independently]
-
-**Acceptance Scenarios**:
-
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** [初始狀態]，**When** [操作行為]，**Then** [預期展示結果]
 
 ---
 
-[Add more user stories as needed, each with an assigned priority]
+### 使用者故事 3 - [簡短標題]（優先度：P3）
 
-### Edge Cases
+[描述額外旅程]
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+**優先原因**：[說明此故事的價值]
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+**獨立驗證方式**：[描述如何驗證]
 
-## Requirements *(mandatory)*
+**驗收情境**：
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
+1. **Given** [初始狀態]，**When** [操作行為]，**Then** [預期展示結果]
 
-### Functional Requirements
+### 邊界情境
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- 當展示資料為空時，畫面如何呈現？
+- 當使用者操作到模擬失敗流程時，畫面如何提示？
+- 當模組頁面缺少必要參數或資料時，是否有預設顯示內容？
+- 當網頁 UI 與 APP 畫面呈現方式不同時，是否有清楚定義差異？
 
-*Example of marking unclear requirements:*
+## 需求（必要）
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+### 功能需求
 
-### Key Entities *(include if feature involves data)*
+- **FR-001**：系統 MUST 提供依功能模組拆分的多個網頁 HTML 頁面。
+- **FR-002**：系統 MUST 提供對應功能的 APP 介面展示畫面。
+- **FR-003**：系統 MUST 以 HTML、CSS、JavaScript 實作或模擬所有展示互動。
+- **FR-004**：每個主要流程 MUST 提供可操作的展示資料，並支援網頁與 APP 畫面展示。
+- **FR-005**：系統 MUST 明確標示任何 API、資料庫或外部整合僅為模擬。
+- **FR-006**：規格內容 MUST 以台灣繁體中文撰寫。
 
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+### 關鍵實體（如功能涉及資料再填）
 
-## Success Criteria *(mandatory)*
+- **[實體 1]**：[代表的展示資料或畫面資訊]
+- **[實體 2]**：[與其他畫面或資料的關係]
 
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
+## 成功標準（必要）
 
-### Measurable Outcomes
+### 可衡量結果
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-001**：使用者可在不依賴後端服務的情況下完成主要展示流程。
+- **SC-002**：每個功能模組至少有一個獨立網頁頁面與一組對應 APP 畫面可操作與展示。
+- **SC-003**：主要情境、空狀態與錯誤狀態皆可透過展示資料在網頁與 APP 介面重現。
+- **SC-004**：利害關係人可僅透過規格文件與前端雛型理解網頁與 APP 的操作方式。
 
-## Assumptions
+## 假設
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right assumptions based on reasonable defaults
-  chosen when the feature description did not specify certain details.
--->
-
-- [Assumption about target users, e.g., "Users have stable internet connectivity"]
-- [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
-- [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
-- [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- 雛型目的為展示網頁與 APP 的流程與資訊架構，不包含正式後端實作。
+- 展示資料可接受以前端假資料維護，不要求真實資料同步。
+- 若未特別說明，所有文件與介面文案皆以台灣繁體中文為主。
+- `chat-history.md` 會保留此次需求相關的原始對話內容供追溯。

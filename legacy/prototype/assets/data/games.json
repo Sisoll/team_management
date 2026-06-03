@@ -1,0 +1,26 @@
+[
+  {
+    "gameId": "game-league-home",
+    "title": "聯盟例行賽 vs 城南黑豹",
+    "competitionCategory": "league",
+    "sportType": "baseball",
+    "matchMode": "official",
+    "gameStatus": "lineup_confirmed"
+  },
+  {
+    "gameId": "game-live-friendly",
+    "title": "友誼賽 vs 北投流星",
+    "competitionCategory": "friendly",
+    "sportType": "softball",
+    "matchMode": "friendly",
+    "gameStatus": "live"
+  },
+  {
+    "gameId": "game-cup-review",
+    "title": "盃賽八強 vs 南港赤雷",
+    "competitionCategory": "cup",
+    "sportType": "softball",
+    "matchMode": "official",
+    "gameResolution": "regulatory_win"
+  }
+]

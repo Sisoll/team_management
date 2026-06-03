@@ -1,0 +1,16 @@
+[
+  {
+    "eventId": "ev-001",
+    "gameId": "game-live-friendly",
+    "eventType": "single",
+    "captureSource": "manual",
+    "reviewStatus": "confirmed"
+  },
+  {
+    "eventId": "ev-003",
+    "gameId": "game-live-friendly",
+    "eventType": "substitution",
+    "captureSource": "voice",
+    "reviewStatus": "pending"
+  }
+]

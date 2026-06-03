@@ -1,0 +1,22 @@
+[
+  {
+    "userId": "u-owner",
+    "displayName": "陳柏宇",
+    "joinedTeams": ["team-seabreeze"],
+    "teamRoles": {
+      "team-seabreeze": ["owner", "manager"]
+    }
+  },
+  {
+    "userId": "u-new",
+    "displayName": "新建立隊長",
+    "joinedTeams": [],
+    "teamRoles": {}
+  },
+  {
+    "userId": "u-viewer",
+    "displayName": "公開檢視者",
+    "joinedTeams": [],
+    "teamRoles": {}
+  }
+]

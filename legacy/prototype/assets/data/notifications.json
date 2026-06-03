@@ -1,0 +1,16 @@
+[
+  {
+    "notificationId": "nt-006",
+    "gameId": "game-live-friendly",
+    "targetUserId": "u-scorer",
+    "deliveryStatus": "已送達",
+    "deliveryChannel": "platform"
+  },
+  {
+    "notificationId": "nt-008",
+    "gameId": "game-scorer-request",
+    "targetUserId": "u-player-2",
+    "deliveryStatus": "外部通道保留",
+    "deliveryChannel": "external-reserved"
+  }
+]
