@@ -26,7 +26,7 @@ export default function TeamPage() {
   async function changeNumber(p: any) {
     const next = prompt(`新背號（${p.displayName}）`, p.uniformNumber ?? '')
     if (next === null) return
-    await api.players.update(teamId!, p.playerId, { uniformNumber: next }); load()
+    await api.players.update(teamId!, p.playerId, { uniformNumber: next || undefined }); load()
   }
   async function remove(p: any) {
     if (!confirm(`封存球員 ${p.displayName}？`)) return

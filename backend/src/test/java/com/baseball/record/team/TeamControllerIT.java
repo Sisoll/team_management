@@ -68,4 +68,22 @@ class TeamControllerIT extends IntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.teamName").value("New"));
     }
+
+    @Test
+    void patch_ignores_sport_type_change() throws Exception {
+        String token = registerToken("owner3_");
+        String teamId = com.jayway.jsonpath.JsonPath.read(
+            mvc.perform(post("/api/teams").header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"teamName\":\"T\",\"sportType\":\"baseball\"}"))
+                .andReturn().getResponse().getContentAsString(), "$.teamId");
+
+        // sportType 不在 UpdateTeamRequest，PATCH body 內的 sportType 應被忽略、球種不變
+        mvc.perform(patch("/api/teams/" + teamId).header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"teamName\":\"T2\",\"sportType\":\"softball_slow\"}"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.teamName").value("T2"))
+           .andExpect(jsonPath("$.sportType").value("baseball"));
+    }
 }
