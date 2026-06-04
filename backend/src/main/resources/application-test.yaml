@@ -7,6 +7,9 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
 app:
   jwt:
     secret: test-secret-test-secret-test-secret-32bytes-min

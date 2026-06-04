@@ -15,4 +15,16 @@ export const api = {
   register: (d: object) => req('/api/auth/register', { method: 'POST', body: JSON.stringify(d) }),
   login: (d: object) => req('/api/auth/login', { method: 'POST', body: JSON.stringify(d) }),
   me: () => req('/api/auth/me'),
+  teams: {
+    list: () => req('/api/teams'),
+    create: (d: object) => req('/api/teams', { method: 'POST', body: JSON.stringify(d) }),
+    get: (id: string) => req(`/api/teams/${id}`),
+  },
+  players: {
+    list: (teamId: string, qs = '') => req(`/api/teams/${teamId}/players${qs}`),
+    create: (teamId: string, d: object) => req(`/api/teams/${teamId}/players`, { method: 'POST', body: JSON.stringify(d) }),
+    update: (teamId: string, pid: string, d: object) => req(`/api/teams/${teamId}/players/${pid}`, { method: 'PATCH', body: JSON.stringify(d) }),
+    remove: (teamId: string, pid: string) => req(`/api/teams/${teamId}/players/${pid}`, { method: 'DELETE' }),
+    history: (teamId: string, pid: string) => req(`/api/teams/${teamId}/players/${pid}/history`),
+  },
 }

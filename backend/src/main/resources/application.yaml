@@ -11,6 +11,9 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
 app:
   jwt:
     secret: ${JWT_SECRET:dev-secret-change-me-please-32bytes-minimum-1234567890}
