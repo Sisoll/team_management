@@ -11,6 +11,15 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Java / Maven
+target/
+
 # Playwright CLI / 生成物
 .playwright-cli/
 output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# 本機暫存預覽（截圖等）
+preview-*.png

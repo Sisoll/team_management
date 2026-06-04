@@ -1,0 +1,17 @@
+server:
+  port: 5199
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/baseball
+    username: baseball
+    password: baseball
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me-please-32bytes-minimum-1234567890}
+    ttl-minutes: 720

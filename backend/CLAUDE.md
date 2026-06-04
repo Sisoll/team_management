@@ -2,6 +2,19 @@
 
 > Claude Code 在 `backend/` 工作時自動載入。產品需求見 `../specs/`，設計見 `../docs/superpowers/specs/`。
 
+## 本機建置（JDK 21 就地切換）⚠️
+
+- 本專案限定 **Java 21 + Spring Boot 3.5**；**系統全域 JAVA_HOME 維持 17 不動**（其他專案用 17）。
+- JDK 21 已裝在 `C:\Program Files\OpenJDK\jdk-21`（Oracle JDK 21）。
+- **每個 build / test shell 開頭就地 export**（只影響該 shell，不污染系統）：
+
+  ```bash
+  export JAVA_HOME="C:/Program Files/OpenJDK/jdk-21"
+  export PATH="$JAVA_HOME/bin:$PATH"
+  ```
+- 驗證：`mvn -version` 應顯示 `Java version: 21 ... runtime: C:\Program Files\OpenJDK\jdk-21`。
+- 別用 `setx /M` 或改 Machine 環境變數把整機切 21；安裝程式曾誤改過，已還原成 17。
+
 ## 技術與原則
 
 - **Java Spring Boot**；**PostgreSQL**（JPA/Hibernate；事件 payload/快照用 **JSONB**）。
