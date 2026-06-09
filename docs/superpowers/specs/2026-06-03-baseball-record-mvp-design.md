@@ -242,15 +242,20 @@ baseball_record/
 
 整份 MVP **不放進單一 plan**（會 ~40-80 task，難審難執行）。切成 3 個有依賴順序的子里程碑，**每個各自跑 writing-plans → tasks → 子代理 TDD → 確認 AC**，做完一個再進下一個，讓 plan 永遠保持可審大小。
 
-| 里程碑 | 內容 | 產出（可 demo） | AC |
-|---|---|---|---|
-| **M1 身分與球隊基礎** | auth（註冊/登入/JWT）+ 建球隊（owner）+ RBAC schema/授權層 + 球員 CRUD | 可登入、建隊、管球員名單 | AC-1,2,3 |
-| **M2 比賽與出賽名單** | 建比賽（棒/壘×正式/友誼+選規則集）+ 規則 preset + 名單（打序/守位/替補）+ 名單驗證 | 建一場合法比賽與名單 | AC-4,5,6,7 |
-| **M3 賽中記錄與單場統計** | 事件溯源 + 賽中記錄 + 換人/再上場驗證 + SSE 即時計分板 + 修正重算 + 單場 box score | 記完整一場、即時計分板、單場統計 | AC-8,9,10,11,12 |
+| 里程碑 | 內容 | 產出（可 demo） | AC | 狀態 |
+|---|---|---|---|---|
+| **M1 身分與球隊基礎** | auth（註冊/登入/JWT）+ 建球隊（owner）+ RBAC schema/授權層 + 球員 CRUD | 可登入、建隊、管球員名單 | AC-1,2,3 | ✅ **已完成**（merge `master`） |
+| **M2 比賽與出賽名單** | 建比賽（棒/壘×正式/友誼/對內+規則帶入可改）+ 規則 preset（基底模板）+ 名單（打序/守位/替補/路人）+ 名單驗證 | 建一場合法比賽與名單 | AC-4,5,6,7 | ✅ **已完成**（branch `feat/m2-games-lineup`；後端 52 tests + E2E 綠） |
+| **M3 賽中記錄與單場統計** | 事件溯源 + 賽中記錄 + 換人/再上場驗證 + SSE 即時計分板 + 修正重算 + 單場 box score | 記完整一場、即時計分板、單場統計 | AC-8,9,10,11,12 | ⏳ 未開始 |
 
 - 每個里程碑＝完整垂直切片（後端＋前端＋測試），做完即可 demo、驗 AC。
 - **M3 最重**；跑 writing-plans 時若仍過大，再拆 M3a（事件/狀態/驗證）＋ M3b（SSE 計分板/統計）。
 - 執行順序：**M1 → M2 → M3**（後者依賴前者）。
+
+**里程碑文件對照**（各切片的設計/計畫事實來源，本 MVP design 為總綱）：
+- M1-A：`specs/.../`（auth）；M1-B：[`2026-06-04-m1b-teams-players-rbac-design.md`](2026-06-04-m1b-teams-players-rbac-design.md) + plan。
+- M2：設計 [`2026-06-08-m2-games-lineup-design.md`](2026-06-08-m2-games-lineup-design.md)、計畫 [`../plans/2026-06-08-m2-games-lineup.md`](../plans/2026-06-08-m2-games-lineup.md)。
+  - ⚠️ M2 把規則模型由「固定 preset FK」改為「`RulePreset`=seeded 基底模板、`Game` 自帶可改規則欄位、DH/EP 由名單推導」——本檔 §5/§6 的 `RulePreset(supportsDH/EP…)` 與 §7 API 為 MVP 初版概念，**M2 實作以 M2 design doc 為準**。
 
 ---
 

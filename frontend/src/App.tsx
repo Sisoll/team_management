@@ -4,6 +4,8 @@ import { api, getToken, clearToken } from './api/client'
 import LoginPage from './pages/LoginPage'
 import TeamsPage from './pages/TeamsPage'
 import TeamPage from './pages/TeamPage'
+import GameCreatePage from './pages/GameCreatePage'
+import GamePage from './pages/GamePage'
 
 export default function App() {
   const [me, setMe] = useState<any>(null)
@@ -18,6 +20,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<TeamsPage me={me} onLogout={logout} />} />
       <Route path="/teams/:teamId" element={<TeamPage />} />
+      <Route path="/teams/:teamId/games/new" element={<GameCreatePage />} />
+      <Route path="/games/:gameId" element={<GamePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
+import { STATUS_LABEL } from './GameCreatePage'
 import '../pages/LoginPage.css'
 import './teams.css'
+import './games.css'
 
 export default function TeamPage() {
   const { teamId } = useParams()
@@ -11,12 +13,14 @@ export default function TeamPage() {
   const [players, setPlayers] = useState<any[]>([])
   const [name, setName] = useState(''); const [num, setNum] = useState('')
   const [includeArchived, setIncludeArchived] = useState(false)
+  const [games, setGames] = useState<any[]>([])
 
   const load = () => {
     api.teams.get(teamId!).then(setTeam).catch(() => nav('/'))
     api.players.list(teamId!, includeArchived ? '?includeArchived=true' : '').then(setPlayers)
   }
   useEffect(() => { load() }, [teamId, includeArchived])
+  useEffect(() => { api.games.list(teamId!).then(setGames).catch(() => setGames([])) }, [teamId])
 
   async function addPlayer() {
     if (!name.trim()) return
@@ -65,6 +69,25 @@ export default function TeamPage() {
           ))}
         </tbody>
       </table>
+
+      <section className="games-section">
+        <div className="page-head">
+          <h2>比賽</h2>
+          <button className="btn btn-primary" onClick={() => nav(`/teams/${teamId}/games/new`)}>建立比賽</button>
+        </div>
+        <div className="game-list">
+          {games.length === 0 && <p className="meta">尚無比賽</p>}
+          {games.map(g => (
+            <div key={g.gameId} className="game-card" onClick={() => nav(`/games/${g.gameId}`)}>
+              <div>
+                <strong>{g.opponentName ?? '隊內對抗'}</strong>
+                <div className="meta">{g.gameDate} · {g.homeAway === 'home' ? '主場' : '客場'} · {g.matchMode}</div>
+              </div>
+              <span className="status-chip">{STATUS_LABEL[g.gameStatus] ?? g.gameStatus}</span>
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }
