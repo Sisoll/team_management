@@ -45,3 +45,27 @@
 - [ ] 「聯盟帳號」做比賽紀錄
 - [ ] 對手下拉的「聯盟分組 / 全站共享」來源（跨帳號資料）
 - [ ] 對手名稱跨帳號共享 registry
+
+## G. 成員 · RBAC · 帳號連結 · 申請加入（milestone 級，延後做）— 來自 2026-06-10 討論
+
+> 大部分產品意圖**已在 `specs/.../spec.md` 與 `V2` schema 定義**，非從零。延後到 UI 收尾後再開獨立 milestone（完整 design→plan→實作）。**當前 UI 維持現狀**（球員仍用 inline 新增、owner-only）。POC 階段不需要。
+
+**已被 spec / schema 涵蓋（實作時對齊即可，勿重造）**
+- 角色與兩層 RBAC：FR-002/003/005/006；`TeamRole(owner/manager/coach/scorer/member/staff)`、`shared/authorization/TeamAccessPolicy.requireRole`。
+- 邀請成員加入球隊：FR-004（owner/manager 邀請）；FR-005 設定角色。
+- 球員可選擇性連結帳號、先建資料之後再 link：spec Q&A（誰可記錄那段）、US2-AC3、FR-012；schema `players.linked_user_id / linked_membership_id / account_link_status(預設 unlinked)`。
+- 成員/球員狀態欄位：`team_memberships.membership_status`、`players.roster_status / availability`。
+
+**規格尚未涵蓋（此 milestone 要做前需先擴充 spec）**
+- [ ] **使用者自助「申請加入」球隊**（現行 spec 為邀請制 FR-004；自助申請是新增）：需球隊探索/搜尋 + 申請→審核；`membership_status` 狀態機補 `applied / invited`。
+- [ ] **球員↔帳號連結需「被連結 user 同意」**（consent 方向；spec 只說 manager 連結，未定同意）：`account_link_status`：unlinked→pending(邀請中)→linked / declined。
+- [ ] **球員新欄位：暱稱、聯絡方式**（FR-009 未含）＝ 本檔 §B，併入此 milestone 一起 design + migration。
+
+**UI 面（隨此 milestone 一起做，非現在）**
+- [ ] 新增/編輯按鈕**依角色顯示**（非 owner 須被授權才看得到）。
+- [ ] 球員新增/編輯改 **按鈕→Modal**（取代現有 inline 兩 input）；可編 暱稱/背號/聯絡方式/守位/狀態。
+- [ ] 新增球員時可送出「**連結到某 user 帳號**」邀請（待對方同意）。
+- [ ] 一般 user「**申請加入球隊**」入口。
+- [ ] 球員/成員**狀態徽章**：邀請中 / 申請中 / 已連結 / 在隊 / 封存…
+
+> §B（暱稱/聯絡資訊）併入本節，不再單列。
