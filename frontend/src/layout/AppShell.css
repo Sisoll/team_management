@@ -1,0 +1,11 @@
+.app-topbar { background: var(--topbar-bg); color: var(--topbar-fg); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 var(--space-4); height: 52px; }
+.app-brand { background: none; border: none; color: var(--topbar-fg); font-weight: 700; font-size: 16px; cursor: pointer; }
+.app-account { position: relative; }
+.app-account-btn { background: none; border: none; color: var(--topbar-fg); cursor: pointer; font-size: 14px; }
+.app-account-menu { position: absolute; right: 0; top: 100%; margin-top: var(--space-1); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow); min-width: 120px; overflow: hidden; }
+.app-account-menu button { display: block; width: 100%; text-align: left; padding: 10px 14px; background: none; border: none;
+  cursor: pointer; color: var(--text); }
+.app-account-menu button:hover { background: var(--surface-alt); }
+.app-content { max-width: 860px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
