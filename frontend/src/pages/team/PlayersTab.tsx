@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { api } from '../../api/client'
 import { Button, Input, Modal, Skeleton, useToast } from '../../ui'
 import '../teams.css'
 
 export default function PlayersTab() {
-  const { team } = useOutletContext<{ team: any }>()
-  const teamId = team?.teamId
+  const teamId = useParams().teamId!
   const [players, setPlayers] = useState<any[] | null>(null)
   const [name, setName] = useState(''); const [num, setNum] = useState('')
   const [includeArchived, setIncludeArchived] = useState(false)

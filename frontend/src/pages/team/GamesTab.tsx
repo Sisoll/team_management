@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useOutletContext } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../api/client'
 import { Button, Card, EmptyState, Skeleton, StatusBadge } from '../../ui'
 import '../teams.css'; import '../games.css'
 
 export default function GamesTab() {
-  const { team } = useOutletContext<{ team: any }>()
-  const teamId = team?.teamId
+  const teamId = useParams().teamId!
   const [games, setGames] = useState<any[] | null>(null)
   const nav = useNavigate()
   useEffect(() => { teamId && api.games.list(teamId).then(setGames).catch(() => setGames([])) }, [teamId])
