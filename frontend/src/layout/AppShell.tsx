@@ -12,7 +12,7 @@ export default function AppShell({ userName, onLogout, children }:
   return (
     <div className="app-shell">
       <header className="app-topbar">
-        <button className="app-brand" onClick={() => nav('/')}>⚾ 紀錄台</button>
+        <button className="app-brand" onClick={() => nav('/teams')}>⚾ 紀錄台</button>
         <div className="app-topbar-right">
           <button className="app-create-btn" onClick={() => setCreateOpen(true)}>＋ 建立球隊</button>
           <div className="app-account">

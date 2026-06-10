@@ -7,25 +7,32 @@ import { useTeams } from './TeamsProvider'
 export default function CreateTeamModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [name, setName] = useState('')
   const [sport, setSport] = useState('baseball')
+  const [busy, setBusy] = useState(false)
   const { reload } = useTeams()
   const toast = useToast()
   const nav = useNavigate()
 
   async function create() {
-    if (!name.trim()) return
+    if (!name.trim() || busy) return
+    setBusy(true)
     try {
       const t = await api.teams.create({ teamName: name, sportType: sport })
       await reload()
       setName(''); onClose(); toast.show('球隊已建立')
       if (t?.teamId) nav(`/teams/${t.teamId}`)
-    } catch { toast.show('建立失敗', 'error') }
+      else toast.show('建立成功但無法跳轉', 'error')
+    } catch {
+      toast.show('建立失敗', 'error')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
     <Modal open={open} title="建立球隊" onClose={onClose}
       footer={<>
         <Button variant="ghost" onClick={onClose}>取消</Button>
-        <Button onClick={create} disabled={!name.trim()}>建立</Button>
+        <Button onClick={create} disabled={!name.trim() || busy}>建立</Button>
       </>}>
       <Field label="球隊名稱">
         <Input value={name} onChange={e => setName(e.target.value)} autoFocus placeholder="例如：紅龍隊" />
