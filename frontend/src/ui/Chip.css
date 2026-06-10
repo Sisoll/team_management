@@ -1,0 +1,5 @@
+.ui-chip { display: inline-block; padding: 2px 10px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; }
+.ui-chip-accent { background: var(--accent-soft); color: var(--accent-strong); }
+.ui-chip-warning { background: var(--warning-soft); color: var(--warning); }
+.ui-chip-info { background: var(--info-soft); color: var(--info); }
+.ui-chip-muted { background: var(--surface-alt); color: var(--muted); }

@@ -1,0 +1,4 @@
+.ui-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow); padding: var(--space-4); }
+.ui-card-interactive { cursor: pointer; transition: transform var(--transition), background var(--transition); }
+.ui-card-interactive:hover { transform: translateY(-2px); background: var(--surface-alt); }

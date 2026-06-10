@@ -1,0 +1,8 @@
+.ui-field { display: grid; gap: var(--space-1); font-size: 14px; }
+.ui-field-label { color: var(--muted); }
+.ui-field-error { color: var(--danger); font-size: 13px; }
+.ui-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg); color: var(--text);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition); }
+.ui-input::placeholder { color: var(--muted); }
+.ui-input:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: var(--focus-ring); }

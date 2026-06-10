@@ -1,0 +1,11 @@
+.ui-btn { padding: 10px 16px; border: 1px solid transparent; border-radius: var(--radius-sm);
+  font-weight: 600; cursor: pointer; transition: background var(--transition), border-color var(--transition), opacity var(--transition), transform 0.05s; }
+.ui-btn:active { transform: translateY(1px); }
+.ui-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ui-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.ui-btn-primary { background: var(--accent); color: var(--surface); }
+.ui-btn-primary:hover:not(:disabled) { background: var(--accent-strong); }
+.ui-btn-ghost { background: transparent; border-color: var(--accent); color: var(--accent); }
+.ui-btn-ghost:hover:not(:disabled) { background: var(--accent-soft); }
+.ui-btn-danger { background: var(--danger); color: var(--surface); }
+.ui-btn-danger:hover:not(:disabled) { filter: brightness(0.94); }
