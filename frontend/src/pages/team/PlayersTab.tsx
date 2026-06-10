@@ -36,7 +36,7 @@ export default function PlayersTab() {
       <div className="inline-form">
         <Input placeholder="球員名稱" value={name} onChange={e => setName(e.target.value)} />
         <Input placeholder="背號" inputMode="numeric" value={num} onChange={e => setNum(e.target.value)} />
-        <Button onClick={addPlayer} disabled={!!numErr}>新增球員</Button>
+        <Button onClick={addPlayer} disabled={!!numErr || !name.trim()}>新增球員</Button>
         <label style={{ marginLeft: 'auto', alignSelf: 'center' }}>
           <input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)} /> 顯示已封存
         </label>

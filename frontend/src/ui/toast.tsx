@@ -15,8 +15,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastCtx.Provider value={{ show }}>
       {children}
-      <div className="ui-toast-stack" role="status" aria-live="polite">
-        {items.map(t => <div key={t.id} className={`ui-toast ui-toast-${t.tone}`}>{t.text}</div>)}
+      <div className="ui-toast-stack" aria-live="polite">
+        {items.map(t => <div key={t.id} className={`ui-toast ui-toast-${t.tone}`}
+          role={t.tone === 'error' ? 'alert' : 'status'}>{t.text}</div>)}
       </div>
     </ToastCtx.Provider>
   )

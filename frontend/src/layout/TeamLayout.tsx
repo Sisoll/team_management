@@ -9,7 +9,7 @@ export default function TeamLayout() {
   const { teamId } = useParams()
   const nav = useNavigate()
   const [team, setTeam] = useState<any>(null)
-  useEffect(() => { api.teams.get(teamId!).then(setTeam).catch(() => nav('/')) }, [teamId])
+  useEffect(() => { api.teams.get(teamId!).then(setTeam).catch(() => nav('/')) }, [teamId, nav])
 
   const base = `/teams/${teamId}`
   const tabs: Tab[] = [
