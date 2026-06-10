@@ -14,3 +14,6 @@
 .table th, .table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .table th { background: var(--surface-alt); color: var(--muted); font-size: 13px; }
 .row-actions { display: flex; gap: 8px; }
+.page-title { color: var(--accent-strong); margin: 0 0 var(--space-4); font-size: 22px; }
+.muted { color: var(--muted); font-size: 13px; }
+.card-grid .ui-card h3 { margin: 0 0 var(--space-1); color: var(--accent-strong); }

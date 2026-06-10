@@ -75,6 +75,10 @@
   margin-top: 6px;
 }
 
+.auth-actions .ui-btn {
+  flex: 1;
+}
+
 .btn {
   flex: 1;
   padding: 12px 16px;
