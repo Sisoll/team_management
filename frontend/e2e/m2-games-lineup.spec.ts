@@ -8,10 +8,10 @@ async function registerAndTeam(page: any, prefix: string) {
   await page.getByPlaceholder('email').fill(email)
   await page.getByPlaceholder('密碼').fill('pw123456')
   await page.getByRole('button', { name: '註冊' }).click()
-  await expect(page.getByRole('heading', { name: '我的球隊' })).toBeVisible()
-  await page.getByPlaceholder('球隊名稱').fill('M2 Team')
+  // 右上角 Modal 建立球隊 → 自動進該隊球員分頁
   await page.getByRole('button', { name: '建立球隊' }).click()
-  await page.getByText('M2 Team').click()
+  await page.getByLabel('球隊名稱').fill('M2 Team')
+  await page.getByRole('dialog').getByRole('button', { name: '建立' }).click()
   await expect(page).toHaveURL(/\/teams\/.+\/players/)
 }
 
@@ -33,13 +33,11 @@ test('AC-4/5：建比賽 + 合法名單確認', async ({ page }) => {
     await expect(page.getByRole('cell', { name: n, exact: true })).toBeVisible()
   }
 
-  // 建比賽（baseball / formal / 9 人，預設可直接送）
   await gotoCreateGame(page)
   await page.locator('input[type=date]').fill('2026-07-01')
   await page.getByPlaceholder('對手名稱').fill('Lions')
   await page.getByRole('button', { name: '建立比賽' }).click()
 
-  // 落在名單分頁；等初始載入完成（game/players/roster GET）
   await expect(page).toHaveURL(/\/games\/.+\/lineup/)
   await expect(page.getByRole('button', { name: '＋ 新增一列' })).toBeVisible()
   const positions = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF']
@@ -52,7 +50,6 @@ test('AC-4/5：建比賽 + 合法名單確認', async ({ page }) => {
   }
 
   await page.getByRole('button', { name: '確認名單' }).click()
-  // 狀態 badge 轉為「名單已確認」＝ gameStatus → lineup_confirmed（AC-5）
   await expect(page.locator('.ui-chip').filter({ hasText: '名單已確認' })).toBeVisible()
 })
 
@@ -69,7 +66,6 @@ test('AC-6：不合法名單顯示原因', async ({ page }) => {
   await page.getByRole('button', { name: '建立比賽' }).click()
   await expect(page).toHaveURL(/\/games\/.+\/lineup/)
 
-  // 只放 1 人、非投手守位 → 確認失敗顯示原因
   await expect(page.getByRole('button', { name: '＋ 新增一列' })).toBeVisible()
   await page.getByRole('button', { name: '＋ 新增一列' }).click()
   const row = page.locator('table.table tbody tr').first()

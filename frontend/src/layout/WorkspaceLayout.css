@@ -1,0 +1,19 @@
+.ws { display: flex; gap: var(--space-4); align-items: flex-start; }
+.ws-side { width: 200px; flex-shrink: 0; background: var(--surface-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--space-3); display: grid; gap: var(--space-1); }
+.ws-side-lab { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-1); }
+.ws-side-empty { font-size: 12px; color: var(--muted); margin: 0; }
+.ws-team { text-align: left; background: none; border: none; border-radius: var(--radius-sm); padding: 8px 10px;
+  cursor: pointer; display: grid; gap: 2px; transition: background var(--transition); }
+.ws-team:hover { background: var(--bg); }
+.ws-team.on { background: var(--accent); color: var(--surface); }
+.ws-team.on .ws-team-meta { color: var(--surface); opacity: 0.85; }
+.ws-team-name { font-weight: 600; font-size: 14px; }
+.ws-team-meta { font-size: 11px; color: var(--muted); }
+.ws-main { flex: 1; min-width: 0; }
+
+@media (max-width: 640px) {
+  .ws { flex-direction: column; }
+  .ws-side { width: 100%; display: flex; flex-wrap: wrap; }
+  .ws-side-lab { width: 100%; }
+}

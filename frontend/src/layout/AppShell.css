@@ -8,4 +8,8 @@
 .app-account-menu button { display: block; width: 100%; text-align: left; padding: 10px 14px; background: none; border: none;
   cursor: pointer; color: var(--text); }
 .app-account-menu button:hover { background: var(--surface-alt); }
-.app-content { max-width: 860px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
+.app-topbar-right { display: flex; align-items: center; gap: var(--space-3); }
+.app-create-btn { background: var(--surface); color: var(--accent-strong); border: none; border-radius: var(--radius-sm);
+  padding: 6px 12px; font-weight: 600; font-size: 13px; cursor: pointer; transition: background var(--transition); }
+.app-create-btn:hover { background: var(--accent-soft); }
+.app-content { max-width: 1080px; margin: 0 auto; padding: var(--space-5) var(--space-4); }

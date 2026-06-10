@@ -1,0 +1,2 @@
+.team-head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); flex-wrap: wrap; }
+.team-head h2 { margin: 0; color: var(--accent-strong); font-size: 20px; }

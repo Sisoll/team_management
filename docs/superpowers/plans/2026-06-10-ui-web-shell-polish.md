@@ -1047,3 +1047,56 @@ git commit -m "test(e2e): update specs for app shell + tab navigation, add navig
 - spec §10 AC → 由 Phase 4 E2E 覆蓋（AC1 落地/頂欄、AC2 分頁+chip+麵包屑、AC3 比賽分頁、AC4 Modal、AC5 skeleton/toast/即時驗證、AC6 視覺/RWD、AC7 既有綠）。
 
 > RWD（AC6）無自動測試；由使用者在實機/縮放確認（設計定方向、細節看 UI 後微調）。
+
+---
+
+## Phase 5 — IA v2（全域分頁 + 我的球隊側邊欄）
+
+> 來源：使用者 2026-06-10 改版（design §4 v2）。在 Phase 0–4 的成果上演進；沿用 subagent 寫檔、controller 集中 build/E2E、per-Phase commit。
+
+**File Structure（新增 / 改）**
+- 新增 `src/teams/TeamsProvider.tsx`：context `{ teams, reload }`（`api.teams.list`＝我所屬球隊）。
+- 新增 `src/layout/GlobalTabBar.tsx`/`.css`：全域分頁（總覽「尚未實作」/我的球隊/行事曆「即將」/統計「即將」）；active 由 `useLocation` 判定（`/teams*`或`/games*`→我的球隊）。
+- 新增 `src/teams/CreateTeamModal.tsx`：球隊名＋球種 Select，建立成功 → `reload()` ＋導到新隊。
+- 新增 `src/layout/WorkspaceLayout.tsx`/`.css`：左側欄（讀 TeamsProvider，highlight＝`useParams().teamId`，點擊導到 `/teams/:id`）＋ 右主區 `<Outlet/>`；側邊欄 RWD（窄螢幕收合）。
+- 改 `src/layout/AppShell.tsx`：頂欄加右上 `＋建立球隊`（開 CreateTeamModal）；其下渲染 `GlobalTabBar`。
+- 改 `src/App.tsx`：包 `TeamsProvider`；路由 v2。
+- 改 `src/layout/TeamLayout.tsx`：主區頂部＝球隊名＋身分 chip＋球隊 TabBar；「我的球隊 ›」麵包屑簡化（側邊欄已表達）。
+- 移除 `src/pages/TeamsPage.tsx`（卡片清單頁；清單移側邊欄、建立移右上 Modal）。
+
+### Task 5.1: TeamsProvider（context）
+**Files:** Create `frontend/src/teams/TeamsProvider.tsx`
+- [ ] `{ teams, reload, loading }` context；`reload = () => api.teams.list().then(setTeams)`；`useTeams()` hook。掛在 `App` 已登入區（`<TeamsProvider>` 包 AppShell）。
+
+### Task 5.2: GlobalTabBar
+**Files:** Create `frontend/src/layout/GlobalTabBar.tsx`, `.css`
+- [ ] 4 個全域分頁；`NavLink`/`useLocation` 判 active（`我的球隊` 在 `/teams`或`/games` 路徑時 on）；`總覽`→`/overview`(soon「尚未實作」)、`行事曆`/`統計`(soon「即將推出」)。樣式吃 tokens（深綠列、底線 active）。
+
+### Task 5.3: AppShell 改版 + CreateTeamModal
+**Files:** Modify `frontend/src/layout/AppShell.tsx`(+css)；Create `frontend/src/teams/CreateTeamModal.tsx`
+- [ ] 頂欄右側：`＋建立球隊`（primary，開 Modal）＋ 帳號選單。Modal 用 `ui/Modal`＋`Field/Input/Select`；建立成功 `useTeams().reload()`＋`useToast()`＋`nav('/teams/'+id)`。
+- [ ] AppShell 渲染 `GlobalTabBar`（頂欄下）＋ children。
+
+### Task 5.4: WorkspaceLayout（側邊欄）
+**Files:** Create `frontend/src/layout/WorkspaceLayout.tsx`, `.css`
+- [ ] 左側欄：`useTeams()` 列球隊，`useParams().teamId` highlight，點擊 `nav('/teams/'+id)`；無球隊→提示「右上角建立球隊」。右主區 `<Outlet/>`。RWD：≤640px 側邊欄變上方下拉/抽屜。
+
+### Task 5.5: App.tsx 路由 v2
+**Files:** Modify `frontend/src/App.tsx`
+- [ ] `<TeamsProvider><AppShell>` 包 `<Routes>`：`/`→`Navigate /teams`；`/overview|/calendar|/stats`→`Placeholder`；`element=<WorkspaceLayout/>` 包 `/teams`(index→第一支球隊或空狀態)、`/teams/:teamId`(TeamLayout)、`/games/:gameId`(GameLayout)；`*`→`/teams`。
+
+### Task 5.6: TeamLayout 簡化 + 移除 TeamsPage
+**Files:** Modify `frontend/src/layout/TeamLayout.tsx`；Delete `frontend/src/pages/TeamsPage.tsx`
+- [ ] TeamLayout 主區頂部：球隊名（h2）＋身分 chip＋球隊 TabBar；移除「我的球隊 ›」麵包屑（保留給 GameLayout 顯示比賽深度）。
+- [ ] 刪 `TeamsPage.tsx`（不再有卡片清單路由）。
+
+### Task 5.7: E2E v2
+**Files:** Modify `frontend/e2e/{auth,team-player,m2-games-lineup,navigation}.spec.ts`
+- [ ] 登入後落在 `/teams`（我的球隊／側邊欄）。建球隊：點右上 `建立球隊`→Modal 填名→建立。進球隊：點側邊欄球隊項。其餘操作（球員 CRUD/Modal、建賽走比賽分頁、名單確認）沿用。新增斷言：頂欄有全域分頁、側邊欄有球隊項、`/overview` 顯示「尚未實作」。
+
+### 驗收（AC v2 增補）
+1. 登入落在「我的球隊」（全域分頁 on）＋左側欄列我所屬球隊。
+2. 右上「建立球隊」開 Modal、建立後側邊欄即時出現新隊並進入。
+3. 點側邊欄切換球隊→右主區換該隊分頁。
+4. 進比賽→右主區比賽分頁，側邊欄與全域分頁仍在。
+5. 全域「總覽」顯示「尚未實作」佔位。

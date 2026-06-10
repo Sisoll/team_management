@@ -9,14 +9,13 @@ test('create team, add/edit/archive player (AC-2/AC-3)', async ({ page }) => {
   await page.getByPlaceholder('密碼').fill('pw123456')
   await page.getByRole('button', { name: '註冊' }).click()
 
-  // 建立球隊
-  await expect(page.getByRole('heading', { name: '我的球隊' })).toBeVisible()
-  await page.getByPlaceholder('球隊名稱').fill('Tigers')
+  // 建立球隊（右上角 Modal）→ 自動進入該隊球員分頁
   await page.getByRole('button', { name: '建立球隊' }).click()
-  await page.getByText('Tigers').click()
-
-  // 進球隊 → 預設球員分頁；新增球員
+  await page.getByLabel('球隊名稱').fill('Tigers')
+  await page.getByRole('dialog').getByRole('button', { name: '建立' }).click()
   await expect(page).toHaveURL(/\/teams\/.+\/players/)
+
+  // 新增球員
   await page.getByPlaceholder('球員名稱').fill('Amy')
   await page.getByPlaceholder('背號').fill('7')
   await page.getByRole('button', { name: '新增球員' }).click()

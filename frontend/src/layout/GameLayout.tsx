@@ -31,8 +31,7 @@ export default function GameLayout() {
   return (
     <>
       <Breadcrumb
-        items={[{ label: '我的球隊', to: '/' },
-          { label: team?.teamName ?? '球隊', to: game ? `/teams/${game.teamId}/games` : '/' },
+        items={[{ label: team?.teamName ?? '球隊', to: game ? `/teams/${game.teamId}/games` : '/teams' },
           { label: title }]}
         trailing={game && <StatusBadge status={game.gameStatus} />} />
       <TabBar tabs={tabs} />
