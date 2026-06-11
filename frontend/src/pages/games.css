@@ -1,15 +1,9 @@
 .games-section { margin-top: 24px; }
 .games-section h2 { margin-bottom: 12px; }
 .game-list { display: grid; gap: 10px; }
-.game-card {
-  display: flex; justify-content: space-between; align-items: center;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-md); padding: 12px 16px; cursor: pointer;
-}
-.game-card:hover { background: var(--surface-alt); }
+/* 版面 only — surface/border/radius/padding/hover 由 <Card interactive> 提供 */
+.game-card { display: flex; justify-content: space-between; align-items: center; }
 .game-card .meta { color: var(--muted); font-size: 0.9em; }
-.status-chip { padding: 2px 10px; border-radius: var(--radius-sm); font-size: 0.85em;
-  background: var(--accent-soft); color: var(--accent-strong); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 640px; }
 .form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9em; color: var(--muted); }
 .form-grid .full { grid-column: 1 / -1; }

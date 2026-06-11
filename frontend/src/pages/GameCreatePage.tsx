@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom'
 import { api } from '../api/client'
 import { Button, Input, Select, useToast } from '../ui'
+import Breadcrumb from '../layout/Breadcrumb'
 import './games.css'
 
 export default function GameCreatePage() {
@@ -61,6 +62,7 @@ export default function GameCreatePage() {
 
   return (
     <section>
+      <Breadcrumb items={[{ label: '比賽', to: `/teams/${teamId}/games` }, { label: '建立比賽' }]} />
       <h2>建立比賽</h2>
       <div className="form-grid">
         <label>球種
@@ -110,8 +112,9 @@ export default function GameCreatePage() {
         <label>天氣<Input value={form.weather} onChange={e => set('weather', e.target.value)} /></label>
         <label>溫度(℃)<Input type="number" value={form.temperatureC} onChange={e => set('temperatureC', e.target.value)} /></label>
       </div>
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
         <Button onClick={submit}>建立比賽</Button>
+        <Button variant="ghost" onClick={() => nav(`/teams/${teamId}/games`)}>取消</Button>
       </div>
     </section>
   )
