@@ -1,0 +1,14 @@
+.rec-statebar { display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 14px; margin-bottom: 12px; }
+.rec-batter { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface-alt); margin-bottom: 12px; font-weight: 600; }
+.rec-pitch { display: flex; gap: 8px; align-items: center; font-size: 0.9em; color: var(--muted); margin-top: 6px; }
+.rec-palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rec-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.rec-diamond { position: relative; width: 150px; height: 150px; margin: 12px auto; }
+.rec-diamond .sq { position: absolute; inset: 28px; transform: rotate(45deg); border: 2px solid var(--accent); }
+.rec-runner { position: absolute; width: 30px; height: 30px; transform: rotate(45deg); cursor: pointer;
+  background: var(--surface-alt); border: 1.5px solid var(--border); }
+.rec-runner.occupied { background: var(--accent); }
+.rec-runner.b1 { right: 16px; top: 60px; } .rec-runner.b2 { left: 60px; top: 16px; } .rec-runner.b3 { left: 16px; top: 60px; }

@@ -22,10 +22,10 @@ export default function GameLayout() {
   const tabs: Tab[] = [
     { to: `${base}/info`, label: '資訊' },
     { to: `${base}/lineup`, label: '出賽名單' },
-    { to: `${base}/record`, label: '記錄', soon: true },
+    { to: `${base}/record`, label: '記錄' },
     { to: `${base}/scoreboard`, label: '計分板', soon: true },
     { to: `${base}/box`, label: '數據', soon: true },
-    { to: `${base}/timeline`, label: '時間線', soon: true },
+    { to: `${base}/timeline`, label: '時間線' },
   ]
   const title = game ? (game.opponentName ?? '隊內對抗') : '…'
   return (

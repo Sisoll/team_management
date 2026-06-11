@@ -14,6 +14,8 @@ import GamesTab from './pages/team/GamesTab'
 import GameCreatePage from './pages/GameCreatePage'
 import InfoTab from './pages/game/InfoTab'
 import LineupTab from './pages/game/LineupTab'
+import RecordTab from './pages/game/RecordTab'
+import TimelineTab from './pages/game/TimelineTab'
 
 export default function App() {
   const [me, setMe] = useState<any>(null)
@@ -47,10 +49,10 @@ export default function App() {
               <Route index element={<Navigate to="lineup" replace />} />
               <Route path="info" element={<InfoTab />} />
               <Route path="lineup" element={<LineupTab />} />
-              <Route path="record" element={<Placeholder name="記錄" />} />
+              <Route path="record" element={<RecordTab />} />
               <Route path="scoreboard" element={<Placeholder name="計分板" />} />
               <Route path="box" element={<Placeholder name="數據" />} />
-              <Route path="timeline" element={<Placeholder name="時間線" />} />
+              <Route path="timeline" element={<TimelineTab />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/teams" replace />} />

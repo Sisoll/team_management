@@ -43,10 +43,21 @@ export const api = {
     get: (gameId: string) => req(`/api/games/${gameId}`),
     update: (gameId: string, d: object) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify(d) }),
     opponents: (teamId: string, q: string) => req(`/api/teams/${teamId}/opponents?q=${encodeURIComponent(q)}`),
+    start: (gameId: string, d: object) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'live', ...d }) }),
+    pause: (gameId: string) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'paused' }) }),
+    resume: (gameId: string) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'live' }) }),
+    complete: (gameId: string) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'completed' }) }),
+    state: (gameId: string) => req(`/api/games/${gameId}/state`),
   },
   roster: {
     get: (gameId: string) => req(`/api/games/${gameId}/roster`),
     put: (gameId: string, d: object) => req(`/api/games/${gameId}/roster`, { method: 'PUT', body: JSON.stringify(d) }),
     validate: (gameId: string) => req(`/api/games/${gameId}/roster:validate`, { method: 'POST' }),
+  },
+  events: {
+    list: (gameId: string) => req(`/api/games/${gameId}/events`),
+    record: (gameId: string, d: object) => req(`/api/games/${gameId}/events`, { method: 'POST', body: JSON.stringify(d) }),
+    update: (gameId: string, eventId: string, d: object) => req(`/api/games/${gameId}/events/${eventId}`, { method: 'PATCH', body: JSON.stringify(d) }),
+    remove: (gameId: string, eventId: string) => req(`/api/games/${gameId}/events/${eventId}`, { method: 'DELETE' }),
   },
 }
