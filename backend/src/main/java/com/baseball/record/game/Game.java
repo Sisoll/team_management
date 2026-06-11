@@ -24,6 +24,8 @@ public class Game {
     @Column(name = "weather") private String weather;
     @Column(name = "temperature_c") private Integer temperatureC;
     @Column(name = "game_status", nullable = false) private String gameStatus = "draft";
+    @Column(name = "recording_detail", nullable = false) private String recordingDetail = "L2";
+    @Column(name = "symmetric_opponent", nullable = false) private boolean symmetricOpponent = false;
     @Column(name = "created_by", nullable = false) private UUID createdBy;
     @Column(name = "created_at", nullable = false) private OffsetDateTime createdAt = OffsetDateTime.now();
     @Column(name = "updated_at", nullable = false) private OffsetDateTime updatedAt = OffsetDateTime.now();
@@ -47,5 +49,7 @@ public class Game {
     public String getWeather() { return weather; } public void setWeather(String v) { weather = v; }
     public Integer getTemperatureC() { return temperatureC; } public void setTemperatureC(Integer v) { temperatureC = v; }
     public String getGameStatus() { return gameStatus; } public void setGameStatus(String v) { gameStatus = v; }
+    public String getRecordingDetail() { return recordingDetail; } public void setRecordingDetail(String v) { recordingDetail = v; }
+    public boolean isSymmetricOpponent() { return symmetricOpponent; } public void setSymmetricOpponent(boolean v) { symmetricOpponent = v; }
     public void touch() { this.updatedAt = OffsetDateTime.now(); }
 }

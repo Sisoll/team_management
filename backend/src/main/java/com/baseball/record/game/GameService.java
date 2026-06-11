@@ -80,6 +80,8 @@ public class GameService {
         Game g = load(gameId);
         policy.requireRole(userId, g.getTeamId(), TeamRole.OWNER);
         applyFields(g, req);
+        if (req.recordingDetail() != null) g.setRecordingDetail(req.recordingDetail());
+        if (req.symmetricOpponent() != null) g.setSymmetricOpponent(req.symmetricOpponent());
         if (req.gameStatus() != null) transition(g, req.gameStatus());
         g.touch();
         return toResponse(g);
@@ -94,6 +96,9 @@ public class GameService {
                 rosters.findByGameId(g.getGameId()).ifPresent(r -> { r.setConfirmedAt(null); r.touch(); });
                 g.setGameStatus("scheduled");
             }
+            case "lineup_confirmed->live", "paused->live" -> g.setGameStatus("live");
+            case "live->paused" -> g.setGameStatus("paused");
+            case "live->completed", "paused->completed" -> g.setGameStatus("completed");
             default -> throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "illegal status transition " + g.getGameStatus() + " -> " + target);
         }
@@ -142,6 +147,6 @@ public class GameService {
         return new GameResponse(g.getGameId(), g.getTeamId(), g.getSportType(), g.getMatchMode(),
             g.getBasePresetId(), g.isDhEnabled(), g.isEpAllowed(), g.getRosterSize(), g.isReEntryAllowed(),
             g.getGameDate(), g.getHomeAway(), g.getOpponentName(), g.getVenue(), g.getWeather(),
-            g.getTemperatureC(), g.getGameStatus());
+            g.getTemperatureC(), g.getGameStatus(), g.getRecordingDetail(), g.isSymmetricOpponent());
     }
 }

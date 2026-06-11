@@ -95,4 +95,68 @@ class GameControllerIT extends IntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$[0].name").value("Dragons"));
     }
+
+    /** 建賽 → 加 9 名球員 → PUT 合法名單 → confirm，回 gameId（lineup_confirmed）。 */
+    private String createConfirmedGame(String t, String teamId) throws Exception {
+        String gameId = com.jayway.jsonpath.JsonPath.read(
+            mvc.perform(post("/api/teams/" + teamId + "/games").header("Authorization", "Bearer " + t)
+                    .contentType(MediaType.APPLICATION_JSON).content(createGameBody("Foe")))
+                .andReturn().getResponse().getContentAsString(), "$.gameId");
+        String[] pos = {"P","C","1B","2B","3B","SS","LF","CF","RF"};
+        StringBuilder slots = new StringBuilder();
+        for (int i = 0; i < 9; i++) {
+            String pid = com.jayway.jsonpath.JsonPath.read(
+                mvc.perform(post("/api/teams/" + teamId + "/players").header("Authorization", "Bearer " + t)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"displayName\":\"P" + i + "\"}"))
+                    .andReturn().getResponse().getContentAsString(), "$.playerId");
+            if (i > 0) slots.append(",");
+            slots.append("{\"playerId\":\"").append(pid).append("\",\"battingOrder\":").append(i + 1)
+                 .append(",\"fieldPosition\":\"").append(pos[i]).append("\",\"lineupStatus\":\"starter\"}");
+        }
+        mvc.perform(put("/api/games/" + gameId + "/roster").header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"slots\":[" + slots + "]}"))
+           .andExpect(status().isOk());
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"gameStatus\":\"lineup_confirmed\"}"))
+           .andExpect(status().isOk());
+        return gameId;
+    }
+
+    @Test
+    void open_pause_complete_flow() throws Exception {
+        String t = token("gs_"); String teamId = createTeam(t, "baseball");
+        String gameId = createConfirmedGame(t, teamId);
+
+        // lineup_confirmed → live（帶開賽設定）
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"gameStatus\":\"live\",\"recordingDetail\":\"L2\",\"symmetricOpponent\":false}"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.gameStatus").value("live"))
+           .andExpect(jsonPath("$.recordingDetail").value("L2"));
+
+        // live → paused → live → completed
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"gameStatus\":\"paused\"}"))
+           .andExpect(status().isOk()).andExpect(jsonPath("$.gameStatus").value("paused"));
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"gameStatus\":\"live\"}"))
+           .andExpect(status().isOk());
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"gameStatus\":\"completed\"}"))
+           .andExpect(status().isOk()).andExpect(jsonPath("$.gameStatus").value("completed"));
+    }
+
+    @Test
+    void illegal_transition_scheduled_to_live_conflicts() throws Exception {
+        String t = token("gx_"); String teamId = createTeam(t, "baseball");
+        String gameId = com.jayway.jsonpath.JsonPath.read(
+            mvc.perform(post("/api/teams/" + teamId + "/games").header("Authorization", "Bearer " + t)
+                    .contentType(MediaType.APPLICATION_JSON).content(createGameBody("Foe")))
+                .andReturn().getResponse().getContentAsString(), "$.gameId");
+        // scheduled → live（未經 lineup_confirmed）→ 409
+        mvc.perform(patch("/api/games/" + gameId).header("Authorization", "Bearer " + t)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"gameStatus\":\"live\"}"))
+           .andExpect(status().isConflict());
+    }
 }

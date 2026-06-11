@@ -17,4 +17,6 @@ public record UpdateGameRequest(
     @Size(max = 120) String venue,
     @Size(max = 40) String weather,
     @Min(-50) @Max(60) Integer temperatureC,
-    @Pattern(regexp = "draft|scheduled|lineup_confirmed") String gameStatus) {}
+    @Pattern(regexp = "draft|scheduled|lineup_confirmed|live|paused|completed") String gameStatus,
+    @Pattern(regexp = "L1|L2|L3") String recordingDetail,
+    Boolean symmetricOpponent) {}
