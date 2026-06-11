@@ -15,7 +15,7 @@ public final class EventApplier {
         return applyPlay(s, ev);
     }
 
-    static boolean isSubstitution(String t) {
+    public static boolean isSubstitution(String t) {
         return switch (t) {
             case "PINCH_HIT", "PINCH_RUN", "POSITION_CHANGE", "PITCHER_CHANGE", "RE_ENTRY" -> true;
             default -> false;
