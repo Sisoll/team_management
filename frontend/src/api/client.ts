@@ -48,6 +48,9 @@ export const api = {
     resume: (gameId: string) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'live' }) }),
     complete: (gameId: string) => req(`/api/games/${gameId}`, { method: 'PATCH', body: JSON.stringify({ gameStatus: 'completed' }) }),
     state: (gameId: string) => req(`/api/games/${gameId}/state`),
+    boxScore: (gameId: string) => req(`/api/games/${gameId}/box-score`),
+    setEr: (gameId: string, playerId: string, er: number) =>
+      req(`/api/games/${gameId}/pitchers/${playerId}/er`, { method: 'PUT', body: JSON.stringify({ er }) }),
   },
   roster: {
     get: (gameId: string) => req(`/api/games/${gameId}/roster`),
@@ -59,5 +62,31 @@ export const api = {
     record: (gameId: string, d: object) => req(`/api/games/${gameId}/events`, { method: 'POST', body: JSON.stringify(d) }),
     update: (gameId: string, eventId: string, d: object) => req(`/api/games/${gameId}/events/${eventId}`, { method: 'PATCH', body: JSON.stringify(d) }),
     remove: (gameId: string, eventId: string) => req(`/api/games/${gameId}/events/${eventId}`, { method: 'DELETE' }),
+    // 訂閱 SSE 計分板：回傳停止函式。payload = GameStateResponse（{ state }）。
+    stream: (gameId: string, onState: (r: any) => void, onError?: (e: any) => void) => {
+      const ctrl = new AbortController()
+      const token = getToken()
+      fetch(`/api/games/${gameId}/stream`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        signal: ctrl.signal,
+      }).then(async res => {
+        if (!res.ok || !res.body) { onError?.(new Error(String(res.status))); return }
+        const reader = res.body.getReader()
+        const dec = new TextDecoder()
+        let buf = ''
+        for (;;) {
+          const { value, done } = await reader.read()
+          if (done) break
+          buf += dec.decode(value, { stream: true })
+          let i
+          while ((i = buf.indexOf('\n\n')) >= 0) {
+            const frame = buf.slice(0, i); buf = buf.slice(i + 2)
+            const data = frame.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('')
+            if (data) { try { onState(JSON.parse(data)) } catch { /* 忽略非 JSON frame */ } }
+          }
+        }
+      }).catch(err => { if (!ctrl.signal.aborted) onError?.(err) })
+      return () => ctrl.abort()
+    },
   },
 }

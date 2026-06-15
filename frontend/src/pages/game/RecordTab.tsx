@@ -111,6 +111,24 @@ export default function RecordTab() {
       {pending && <RunnerPanel state={state} pending={pending} onCancel={() => setPending(null)}
         onConfirm={(moves) => send(pending.type, moves)} />}
 
+      {state.battingSide === 'offense' && basesOccupied().length > 0 && !pending && (
+        <div className="rec-palette" aria-label="盜壘">
+          {basesOccupied().map(fromBase => {
+            const to = fromBase === '3' ? 'H' : String(Number(fromBase) + 1)
+            return (
+              <span key={fromBase} style={{ display: 'inline-flex', gap: 4 }}>
+                <Button variant="ghost" onClick={() => send('BASE_RUNNING', [{ from: fromBase, to }])}>
+                  {fromBase}壘盜{to === 'H' ? '本' : to}
+                </Button>
+                <Button variant="ghost" onClick={() => send('BASE_RUNNING', [{ from: fromBase, to: 'OUT' }])}>
+                  {fromBase}壘盜失敗
+                </Button>
+              </span>
+            )
+          })}
+        </div>
+      )}
+
       <div className="rec-actions">
         <Button variant="ghost" onClick={undo}>⤺ 撤銷上一筆</Button>
         {game.gameStatus === 'live' && <Button variant="ghost" onClick={() => api.games.pause(gameId!).then(reload)}>暫停</Button>}

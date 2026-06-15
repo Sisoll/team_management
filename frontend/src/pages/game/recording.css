@@ -12,3 +12,29 @@
   background: var(--surface-alt); border: 1.5px solid var(--border); }
 .rec-runner.occupied { background: var(--accent); }
 .rec-runner.b1 { right: 16px; top: 60px; } .rec-runner.b2 { left: 60px; top: 16px; } .rec-runner.b3 { left: 16px; top: 60px; }
+
+/* ── 計分板 / 鑽石 / box（M3b） ── */
+.scoreboard { display: grid; gap: 16px; }
+.sb-score { display: flex; align-items: center; gap: 24px; }
+.sb-team { display: flex; flex-direction: column; align-items: center; }
+.sb-team strong { font-size: 2.4rem; color: var(--accent-strong); }
+.sb-live { margin-left: auto; color: var(--muted); font-size: .85rem; }
+.sb-live.on { color: var(--accent); }
+.sb-line { border-collapse: collapse; }
+.sb-line th, .sb-line td { border: 1px solid var(--border); padding: 2px 8px; text-align: center; min-width: 24px; }
+.sb-situation { display: flex; align-items: center; gap: 16px; }
+
+.diamond { position: relative; width: 64px; height: 64px; }
+.diamond .base { position: absolute; width: 16px; height: 16px; background: var(--surface-alt);
+  border: 1px solid var(--border); transform: rotate(45deg); }
+.diamond .base.on { background: var(--accent); border-color: var(--accent-strong); }
+.diamond .base-2 { top: 0; left: 24px; }
+.diamond .base-1 { top: 24px; left: 48px; }
+.diamond .base-3 { top: 24px; left: 0; }
+.diamond .base-h { top: 48px; left: 24px; background: var(--text); }
+
+.box-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .9rem; }
+.box-table th, .box-table td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: right; }
+.box-table th:first-child, .box-table td:first-child { text-align: left; }
+.box-er { cursor: pointer; text-decoration: underline dotted; }
+.box-er.overridden { color: var(--warning); }
