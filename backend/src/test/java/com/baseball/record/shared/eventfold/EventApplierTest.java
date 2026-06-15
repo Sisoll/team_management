@@ -68,4 +68,28 @@ class EventApplierTest {
         assertThat(s.pitcherPitches().get(p).pitches()).isEqualTo(4);
         assertThat(s.outs()).isEqualTo(1);
     }
+
+    @Test
+    void base_running_advance_does_not_advance_batting_order() {
+        GameState start = new GameState(1, "top", "offense", 0, 0, 0,
+            BaseState.empty().with("1", "r1"), 3, null, List.of(),
+            new java.util.HashMap<>(), new java.util.ArrayList<>());
+        // 盜二壘：1 壘跑者 → 2 壘；打者沒上場打擊
+        GameState s = EventApplier.apply(start, pa("BASE_RUNNING", List.of(new RunnerMove("1", "2"))));
+        assertThat(s.bases().second()).isEqualTo("r1");
+        assertThat(s.bases().first()).isNull();
+        assertThat(s.currentBatterOrder()).isEqualTo(3);   // 打序游標不動
+        assertThat(s.outs()).isZero();
+    }
+
+    @Test
+    void base_running_caught_stealing_adds_out_keeps_order() {
+        GameState start = new GameState(1, "top", "offense", 0, 0, 0,
+            BaseState.empty().with("1", "r1"), 4, null, List.of(),
+            new java.util.HashMap<>(), new java.util.ArrayList<>());
+        GameState s = EventApplier.apply(start, pa("BASE_RUNNING", List.of(new RunnerMove("1", "OUT"))));
+        assertThat(s.outs()).isEqualTo(1);
+        assertThat(s.bases().first()).isNull();
+        assertThat(s.currentBatterOrder()).isEqualTo(4);
+    }
 }

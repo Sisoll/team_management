@@ -22,6 +22,10 @@ public final class EventApplier {
         };
     }
 
+    public static boolean isBaserunningOnly(String t) {
+        return "BASE_RUNNING".equals(t);
+    }
+
     /** PA 結果 / 跑壘：套用 runnerMoves、計分、計出局、投球累計、必要時翻半局、推進打序游標。 */
     static GameState applyPlay(GameState s, EventView ev) {
         BaseState bases = s.bases();
@@ -68,7 +72,8 @@ public final class EventApplier {
                 BaseState.empty(), nextBatterOrderForHalf(s, nextSide), nextPitcher(s, nextSide),
                 s.lineup(), pp, line);
         }
-        int nextOrder = "offense".equals(s.battingSide()) ? wrap(s.currentBatterOrder(), s.lineup()) : s.currentBatterOrder();
+        int nextOrder = ("offense".equals(s.battingSide()) && !isBaserunningOnly(ev.eventType()))
+            ? wrap(s.currentBatterOrder(), s.lineup()) : s.currentBatterOrder();
         return new GameState(s.inning(), s.half(), s.battingSide(), outs, scoreUs, scoreOpp,
             moved, nextOrder, s.currentPitcherId(), s.lineup(), pp, line);
     }
