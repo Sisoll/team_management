@@ -27,10 +27,13 @@ public class ScoringService {
     private final GameRosterRepository rosters;
     private final LineupSlotRepository slots;
     private final TeamAccessPolicy policy;
+    private final org.springframework.context.ApplicationEventPublisher publisher;
 
     public ScoringService(GameRepository games, GameEventRepository events, GameRosterRepository rosters,
-                          LineupSlotRepository slots, TeamAccessPolicy policy) {
+                          LineupSlotRepository slots, TeamAccessPolicy policy,
+                          org.springframework.context.ApplicationEventPublisher publisher) {
         this.games = games; this.events = events; this.rosters = rosters; this.slots = slots; this.policy = policy;
+        this.publisher = publisher;
     }
 
     @Transactional
@@ -48,6 +51,7 @@ public class ScoringService {
         GameState after = EventApplier.apply(before, toView(ev));
         stampDerived(ev, before, after);
         events.save(ev);
+        publisher.publishEvent(new ScoreboardChanged(gameId, after));
         return toResponse(ev);
     }
 
@@ -71,7 +75,9 @@ public class ScoringService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "event not found"));
         applyRequest(ev, req);          // 改 type/payload/actor（保留 sequenceNo）
         recompute(g, gameId);
-        return state(userId, gameId);
+        GameState now = fold(g, events.findByGameIdOrderBySequenceNoAsc(gameId));
+        publisher.publishEvent(new ScoreboardChanged(gameId, now));
+        return new GameStateResponse(now);
     }
 
     @Transactional
@@ -79,7 +85,9 @@ public class ScoringService {
         Game g = requireOwnerLiveGame(userId, gameId);
         events.findById(eventId).filter(e -> e.getGameId().equals(gameId)).ifPresent(events::delete);
         recompute(g, gameId);
-        return state(userId, gameId);
+        GameState now = fold(g, events.findByGameIdOrderBySequenceNoAsc(gameId));
+        publisher.publishEvent(new ScoreboardChanged(gameId, now));
+        return new GameStateResponse(now);
     }
 
     // ── 重算：refold 全部，逐筆覆寫 snapshot/derived ──
