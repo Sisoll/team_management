@@ -15,6 +15,8 @@ import GameCreatePage from './pages/GameCreatePage'
 import InfoTab from './pages/game/InfoTab'
 import LineupTab from './pages/game/LineupTab'
 import RecordTab from './pages/game/RecordTab'
+import ScoreboardTab from './pages/game/ScoreboardTab'
+import BoxTab from './pages/game/BoxTab'
 import TimelineTab from './pages/game/TimelineTab'
 
 export default function App() {
@@ -50,8 +52,8 @@ export default function App() {
               <Route path="info" element={<InfoTab />} />
               <Route path="lineup" element={<LineupTab />} />
               <Route path="record" element={<RecordTab />} />
-              <Route path="scoreboard" element={<Placeholder name="計分板" />} />
-              <Route path="box" element={<Placeholder name="數據" />} />
+              <Route path="scoreboard" element={<ScoreboardTab />} />
+              <Route path="box" element={<BoxTab />} />
               <Route path="timeline" element={<TimelineTab />} />
             </Route>
           </Route>

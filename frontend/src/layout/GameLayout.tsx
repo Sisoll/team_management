@@ -23,8 +23,8 @@ export default function GameLayout() {
     { to: `${base}/info`, label: '資訊' },
     { to: `${base}/lineup`, label: '出賽名單' },
     { to: `${base}/record`, label: '記錄' },
-    { to: `${base}/scoreboard`, label: '計分板', soon: true },
-    { to: `${base}/box`, label: '數據', soon: true },
+    { to: `${base}/scoreboard`, label: '計分板' },
+    { to: `${base}/box`, label: '數據' },
     { to: `${base}/timeline`, label: '時間線' },
   ]
   const title = game ? (game.opponentName ?? '隊內對抗') : '…'
