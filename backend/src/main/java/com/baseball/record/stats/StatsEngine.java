@@ -15,12 +15,17 @@ public final class StatsEngine {
             if (e.playerId() != null && e.battingOrder() > 0)
                 bat.computeIfAbsent(e.playerId(), id -> new Bat(e.battingOrder(), e.fieldPosition()));
         Map<UUID, Pit> pit = new LinkedHashMap<>();
+        UUID currentPitcher = lineup.startingPitcherId();      // 自管投手：away 隊 fold 的 currentPitcherId 半局為 null，故獨立追蹤
         int oppHits = 0;
 
         for (EventView ev : events) {
             GameState before = s;
             String type = ev.eventType();
-            if (EventApplier.isSubstitution(type)) { s = EventApplier.apply(before, ev); continue; }
+            if (EventApplier.isSubstitution(type)) {
+                if ("PITCHER_CHANGE".equals(type) && ev.subInPlayerId() != null) currentPitcher = ev.subInPlayerId();
+                s = EventApplier.apply(before, ev);
+                continue;
+            }
             boolean offense = "offense".equals(before.battingSide());
 
             if (offense) {
@@ -56,7 +61,7 @@ public final class StatsEngine {
                         if (pid != null && bat.containsKey(pid)) bat.get(pid).sb++;
                     }
             } else {
-                UUID pid = before.currentPitcherId();
+                UUID pid = currentPitcher;
                 if (pid != null) {
                     Pit p = pit.computeIfAbsent(pid, Pit::new);
                     p.outs += (int) ev.runnerMoves().stream().filter(m -> "OUT".equals(m.to())).count();
@@ -64,13 +69,11 @@ public final class StatsEngine {
                     if (isHit(type)) { p.h++; oppHits++; }
                     if ("WALK".equals(type)) p.bb++;
                     if ("STRIKEOUT".equals(type)) p.k++;
+                    if (ev.pitches() != null) p.pitches += ev.pitches().pitches();
                 }
             }
             s = EventApplier.apply(before, ev);
         }
-
-        for (Map.Entry<UUID, PitchTally> e : s.pitcherPitches().entrySet())   // 用球數取最終累計
-            pit.computeIfAbsent(e.getKey(), Pit::new).pitches = e.getValue().pitches();
 
         List<BoxScore.BattingLine> batting = bat.entrySet().stream()
             .sorted(Comparator.comparingInt(en -> en.getValue().order))

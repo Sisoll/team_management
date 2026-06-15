@@ -95,4 +95,20 @@ class StatsEngineTest {
         assertThat(p.pitches()).isEqualTo(7);            // 3 + 4
         assertThat(box.opponent().hits()).isEqualTo(1);
     }
+
+    @Test
+    void away_team_pitcher_attributed_after_flip_to_defense() {
+        UUID[] ids = new UUID[9];
+        for (int i = 0; i < 9; i++) ids[i] = UUID.randomUUID();
+        // away → 先攻；3 出局翻到守備，對手對我方先發投手 ids[0] 擊出全壘打（fold 的 currentPitcherId 此時為 null，靠 StatsEngine 自管投手歸因）
+        List<EventView> evs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) evs.add(ev(i + 1, "STRIKEOUT", ids[i], new RunnerMove("B", "OUT")));
+        evs.add(new EventView(4, "HOME_RUN", null, List.of(), List.of(new RunnerMove("B", "H")),
+            new PitchTally(2, 1, 1, 0, 1), null, null, "敵", null, null, null, null, null));
+        BoxScore box = StatsEngine.fold(awayLineup(ids), evs);
+        var p = box.pitching().stream().filter(x -> x.playerId().equals(ids[0])).findFirst().orElseThrow();
+        assertThat(p.r()).isEqualTo(1);
+        assertThat(p.pitches()).isEqualTo(2);
+        assertThat(box.opponent().runs()).isEqualTo(1);
+    }
 }

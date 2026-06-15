@@ -1574,3 +1574,8 @@ git commit -m "test(m3b): Wave 6 — Playwright E2E 計分板/box score/盜壘/E
 - **Spec 覆蓋**：SSE（§5/Task5）、stats 引擎（§3.1/Task2）、box 規則（§3.2/Task2+4）、ER 覆寫（§3.4/Task3+4）、盜壘（§4/Task1+7）、兩分頁（§7/Task8+9）、V5（§8/Task3）、AC 測試（§9/各 Task）皆有對應 task。
 - **型別一致**：`GameStreamRegistry.add/publish/subscribe`、`ScoreboardChanged(gameId,state)`、`BoxScore.BattingLine/PitchingLine`、`BoxScoreResponse.BatRow/PitchRow`、`EventApplier.isBaserunningOnly` 跨 task 命名一致。
 - **待實作者驗證點（已標註）**：`EventPayload` accessor 名稱、`LineupSlot` getter、`@MockitoSpyBean` vs `@SpyBean`（Spring Boot 版本）、m3a E2E helper 形態。
+
+## 實作修正記錄（執行時發現，已套用）
+
+1. **StatsEngine 自管投手歸因**（Task 2）：原設計用 `before.currentPitcherId()` 歸因投球，但 **away 隊** fold 時 `currentPitcherId` 在守備半局恆為 `null`（M3a `InitialStateBuilder` 只在「先守」時種投手；away 隊翻半局後 `nextPitcher` 帶不到先發投手，且 fold 的投球數也被丟棄）。修正：`StatsEngine` 改自管 `currentPitcher`（種 `lineup.startingPitcherId()`、`PITCHER_CHANGE` 時更新），用球數直接從事件 `ev.pitches()` 累加，不再讀 `s.pitcherPitches()`。**不動 M3a 事件 fold 核心**。已加單元測試 `away_team_pitcher_attributed_after_flip_to_defense` 鎖住。
+2. **IT 助手改名 `post`→`postEvent`**（Task 4）：`BoxScoreControllerIT` 的私有助手 `post(...)` 與靜態 import 的 `MockMvcRequestBuilders.post` 撞名導致編譯失敗；改名 `postEvent`。`GameStreamIT`（Task 5）若沿用同模式請直接用 `postEvent`。
