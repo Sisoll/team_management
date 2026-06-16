@@ -109,3 +109,28 @@ test('AC-C：替補進出與退回報名（三欄卡片數量變化）', async (
   await expect(signupCol.locator('.roster-card')).toHaveCount(1)
   await expect(starterCol.locator('.roster-card')).toHaveCount(0)
 })
+
+test('空白卡不擋存檔、reload 後已排球員不重複出現在報名池（round-trip）', async ({ page }) => {
+  await registerAndTeam(page, 'm4rt')
+  await addPlayers(page, ['R0'])
+  await gotoLineup(page, '2026-07-12', 'Hawks')
+
+  // 先把 R0 排進先發
+  await addStarter(page, 'R0', 'P', 1)
+  // 再加一張「沒填」的空白報名卡（既不選球員也不填路人）
+  await page.getByRole('button', { name: '＋ 報名 / 加候補' }).click()
+  await expect(page.locator('.roster-col[data-col="signup"] .roster-card')).toHaveCount(1)
+
+  // 儲存草稿：空白卡應被前端過濾、不該整批失敗 → 出現「已儲存」
+  await page.getByRole('button', { name: '儲存草稿' }).click()
+  await expect(page.getByText('已儲存')).toBeVisible()
+
+  // reload：R0 仍在先發；報名池不應出現 R0（已排者寫成 present，load 時排除），空白卡也已消失
+  await page.reload()
+  await expect(page.getByRole('button', { name: '＋ 直接加入先發' })).toBeVisible()
+  const starterCol = page.locator('.roster-col[data-col="starter"]')
+  const signupCol = page.locator('.roster-col[data-col="signup"]')
+  await expect(starterCol.locator('.roster-card')).toHaveCount(1)
+  await expect(starterCol.locator('.roster-card').first()).toContainText('R0')
+  await expect(signupCol.locator('.roster-card')).toHaveCount(0)
+})

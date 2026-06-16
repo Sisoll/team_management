@@ -136,31 +136,27 @@ export default function LineupTab() {
   }
 
   function buildBodies() {
-    const slots = [
-      ...board.starter.map((it, i) => ({
-        playerId: it.playerId || undefined,
-        guestName: it.playerId ? undefined : (it.guestName || undefined),
-        battingOrder: i + 1, fieldPosition: it.fieldPosition || undefined, lineupStatus: 'starter',
-      })),
-      ...board.bench.map(it => ({
-        playerId: it.playerId || undefined,
-        guestName: it.playerId ? undefined : (it.guestName || undefined),
-        lineupStatus: 'bench',
-      })),
-    ]
-    const placed = [...board.starter, ...board.bench]
-    const signups = [
-      ...board.signup.map((it, i) => ({
-        playerId: it.playerId || undefined,
-        guestName: it.playerId ? undefined : (it.guestName || undefined),
-        status: it.status, note: it.note || undefined, sortIndex: i,
-      })),
-      ...placed.map((it, i) => ({
-        playerId: it.playerId || undefined,
-        guestName: it.playerId ? undefined : (it.guestName || undefined),
-        status: 'present', sortIndex: 1000 + i,
-      })),
-    ]
+    const PLACED_SORT_OFFSET = 1000
+    const src = (it: Item) => ({
+      playerId: it.playerId || undefined,
+      guestName: it.playerId ? undefined : (it.guestName || undefined),
+    })
+    const isEmpty = (it: Item) => { const f = src(it); return !f.playerId && !f.guestName }
+
+    const starterSlots = board.starter.filter(it => !isEmpty(it)).map((it, i) => ({
+      ...src(it), battingOrder: i + 1, fieldPosition: it.fieldPosition || undefined, lineupStatus: 'starter',
+    }))
+    const benchSlots = board.bench.filter(it => !isEmpty(it)).map(it => ({ ...src(it), lineupStatus: 'bench' }))
+    const slots = [...starterSlots, ...benchSlots]
+
+    // 報名清單 = 候補池 + 已排者（記為 present）；以 keyOf 去重（已排者優先），並丟掉未填的空白卡。
+    const byKey = new Map<string, any>()
+    board.signup.filter(it => !isEmpty(it)).forEach((it, i) =>
+      byKey.set(keyOf(it), { ...src(it), status: it.status, note: it.note || undefined, sortIndex: i }))
+    ;[...board.starter, ...board.bench].filter(it => !isEmpty(it)).forEach((it, i) =>
+      byKey.set(keyOf(it), { ...src(it), status: 'present', sortIndex: PLACED_SORT_OFFSET + i }))
+    const signups = [...byKey.values()]
+
     return { rosterBody: { slots }, signupBody: { signups } }
   }
 
