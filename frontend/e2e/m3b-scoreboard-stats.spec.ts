@@ -2,6 +2,17 @@ import { test, expect } from '@playwright/test'
 
 // 對齊 m3a-recording.spec.ts 的開賽前置。該 helper 未匯出，依計畫複製一份。
 // away → 首半局我隊進攻；排 9 人合法名單並確認。
+
+// 新看板：用欄尾「＋ 直接加入先發」加一張先發卡，選球員＋守位。
+async function addStarter(page: any, name: string, pos: string, expectCount: number) {
+  await page.getByRole('button', { name: '＋ 直接加入先發' }).click()
+  const col = page.locator('.roster-col[data-col="starter"]')
+  await expect(col.locator('.roster-card')).toHaveCount(expectCount)
+  const card = col.locator('.roster-card').nth(expectCount - 1)
+  await card.getByLabel('球員').selectOption({ label: name })
+  await card.getByLabel('守位').selectOption(pos)
+}
+
 async function setupLiveGame(page: any, prefix: string) {
   const email = `${prefix}_${Date.now()}@x.com`
   await page.goto('/')
@@ -30,11 +41,7 @@ async function setupLiveGame(page: any, prefix: string) {
   await expect(page).toHaveURL(/\/games\/.+\/lineup/)
   const pos = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF']
   for (let i = 0; i < 9; i++) {
-    await page.getByRole('button', { name: '＋ 新增一列' }).click()
-    await expect(page.locator('table.table tbody tr')).toHaveCount(i + 1)
-    const row = page.locator('table.table tbody tr').nth(i)
-    await row.locator('select').first().selectOption({ label: names[i] })
-    await row.locator('select').nth(1).selectOption(pos[i])
+    await addStarter(page, names[i], pos[i], i + 1)
   }
   await page.getByRole('button', { name: '確認名單' }).click()
   await expect(page.locator('.ui-chip').filter({ hasText: '名單已確認' })).toBeVisible()

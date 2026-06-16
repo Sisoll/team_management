@@ -22,6 +22,16 @@ async function gotoCreateGame(page: any) {
   await expect(page.locator('input[type=date]')).toBeVisible()
 }
 
+// 新看板：用欄尾「＋ 直接加入先發」加一張先發卡，選球員＋守位。
+async function addStarter(page: any, name: string, pos: string, expectCount: number) {
+  await page.getByRole('button', { name: '＋ 直接加入先發' }).click()
+  const col = page.locator('.roster-col[data-col="starter"]')
+  await expect(col.locator('.roster-card')).toHaveCount(expectCount)
+  const card = col.locator('.roster-card').nth(expectCount - 1)
+  await card.getByLabel('球員').selectOption({ label: name })
+  await card.getByLabel('守位').selectOption(pos)
+}
+
 test('AC-4/5：建比賽 + 合法名單確認', async ({ page }) => {
   await registerAndTeam(page, 'm2a')
 
@@ -39,14 +49,10 @@ test('AC-4/5：建比賽 + 合法名單確認', async ({ page }) => {
   await page.getByRole('button', { name: '建立比賽' }).click()
 
   await expect(page).toHaveURL(/\/games\/.+\/lineup/)
-  await expect(page.getByRole('button', { name: '＋ 新增一列' })).toBeVisible()
+  await expect(page.getByRole('button', { name: '＋ 直接加入先發' })).toBeVisible()
   const positions = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF']
   for (let i = 0; i < 9; i++) {
-    await page.getByRole('button', { name: '＋ 新增一列' }).click()
-    await expect(page.locator('table.table tbody tr')).toHaveCount(i + 1)
-    const row = page.locator('table.table tbody tr').nth(i)
-    await row.locator('select').first().selectOption({ label: names[i] })
-    await row.locator('select').nth(1).selectOption(positions[i])
+    await addStarter(page, names[i], positions[i], i + 1)
   }
 
   await page.getByRole('button', { name: '確認名單' }).click()
@@ -66,11 +72,8 @@ test('AC-6：不合法名單顯示原因', async ({ page }) => {
   await page.getByRole('button', { name: '建立比賽' }).click()
   await expect(page).toHaveURL(/\/games\/.+\/lineup/)
 
-  await expect(page.getByRole('button', { name: '＋ 新增一列' })).toBeVisible()
-  await page.getByRole('button', { name: '＋ 新增一列' }).click()
-  const row = page.locator('table.table tbody tr').first()
-  await row.locator('select').first().selectOption({ label: 'Solo' })
-  await row.locator('select').nth(1).selectOption('C')
+  await expect(page.getByRole('button', { name: '＋ 直接加入先發' })).toBeVisible()
+  await addStarter(page, 'Solo', 'C', 1)
   await page.getByRole('button', { name: '確認名單' }).click()
   await expect(page.getByText('名單不合法')).toBeVisible()
 })
