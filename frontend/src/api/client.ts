@@ -57,6 +57,10 @@ export const api = {
     put: (gameId: string, d: object) => req(`/api/games/${gameId}/roster`, { method: 'PUT', body: JSON.stringify(d) }),
     validate: (gameId: string) => req(`/api/games/${gameId}/roster:validate`, { method: 'POST' }),
   },
+  signups: {
+    get: (gameId: string) => req(`/api/games/${gameId}/signups`),
+    put: (gameId: string, d: object) => req(`/api/games/${gameId}/signups`, { method: 'PUT', body: JSON.stringify(d) }),
+  },
   events: {
     list: (gameId: string) => req(`/api/games/${gameId}/events`),
     record: (gameId: string, d: object) => req(`/api/games/${gameId}/events`, { method: 'POST', body: JSON.stringify(d) }),
