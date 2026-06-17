@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import {
-  DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors, closestCorners,
-  type DragEndEvent,
+  DndContext, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors, closestCorners,
+  type DragEndEvent, type DragStartEvent, type DragOverEvent,
 } from '@dnd-kit/core'
 import {
   SortableContext, arrayMove, verticalListSortingStrategy,
@@ -27,6 +27,24 @@ const STATUS_LABELS: Record<string, string> = {
 }
 const STATUS_KEYS = Object.keys(STATUS_LABELS)
 
+// 守位分群（看板上色用）。出賽守位仍是 P；P 再依球員檔案 primaryPositions 的 SP/RP 細分，
+// 路人/無標記→預設投手色（pitcher）。回傳 undefined 代表未填守位、不上色。
+const INFIELD = new Set(['1B', '2B', '3B', 'SS'])
+const OUTFIELD = new Set(['LF', 'CF', 'RF', 'SF'])
+function posGroup(pos: string | undefined, player: any): string | undefined {
+  if (!pos) return undefined
+  if (pos === 'C') return 'catcher'
+  if (INFIELD.has(pos)) return 'infield'
+  if (OUTFIELD.has(pos)) return 'outfield'
+  if (pos === 'P') {
+    const pp: string[] = player?.primaryPositions ?? []
+    if (pp.includes('SP')) return 'sp'
+    if (pp.includes('RP')) return 'rp'
+    return 'pitcher'
+  }
+  return undefined
+}
+
 type Container = 'signup' | 'starter' | 'bench'
 type Item = { uid: string; playerId?: string; guestName?: string; status: string; note?: string; fieldPosition?: string }
 type Board = Record<Container, Item[]>
@@ -34,6 +52,13 @@ type Board = Record<Container, Item[]>
 let _seq = 0
 const uid = () => `it-${_seq++}`
 const keyOf = (x: { playerId?: string; guestName?: string }) => x.playerId ? `p:${x.playerId}` : `g:${x.guestName}`
+function itemLabel(item: Item, players: any[]) {
+  if (item.playerId) {
+    const p = players.find(pl => pl.playerId === item.playerId)
+    return p ? `${p.displayName}${p.uniformNumber ? ` #${p.uniformNumber}` : ''}` : '球員'
+  }
+  return item.guestName || '路人'
+}
 
 export default function LineupTab() {
   const { game, reload } = useOutletContext<{ game: any; reload: () => void }>()
@@ -43,6 +68,7 @@ export default function LineupTab() {
   const [board, setBoard] = useState<Board>({ signup: [], starter: [], bench: [] })
   const [result, setResult] = useState<{ valid: boolean; violations: { code: string; message: string }[] } | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -93,24 +119,47 @@ export default function LineupTab() {
     })
   }
 
-  function onDragEnd(e: DragEndEvent) {
+  function onDragStart(e: DragStartEvent) { setActiveId(e.active.id as string) }
+
+  // 拖曳過程即時把卡片搬到目標欄（解決「資料過去了但畫面沒過去」）。跨欄移動在這裡發生，
+  // onDragEnd 只負責同欄最終排序。
+  function onDragOver(e: DragOverEvent) {
     const { active, over } = e
     if (!over) return
-    const from = findContainer(active.id as string)
+    const activeUid = active.id as string
+    const overId = over.id as string
+    const from = findContainer(activeUid)
+    const to = findContainer(overId)
+    if (!from || !to || from === to) return
+    setBoard(prev => {
+      const fromItems = prev[from]
+      const item = fromItems.find(it => it.uid === activeUid)
+      if (!item) return prev
+      const toItems = prev[to]
+      const overIdx = overId === to ? toItems.length : toItems.findIndex(it => it.uid === overId)
+      const idx = overIdx < 0 ? toItems.length : overIdx
+      const next: Board = { signup: [...prev.signup], starter: [...prev.starter], bench: [...prev.bench] }
+      next[from] = fromItems.filter(it => it.uid !== activeUid)
+      next[to] = [...toItems.slice(0, idx), item, ...toItems.slice(idx)]
+      return next
+    })
+  }
+
+  function onDragEnd(e: DragEndEvent) {
+    const { active, over } = e
+    setActiveId(null)
+    if (!over) return
+    // 跨欄已在 onDragOver 完成，這裡 from 通常已等於 to；只處理同欄重排。
     const to = findContainer(over.id as string)
-    if (!from || !to) return
-    if (from === to) {
-      setBoard(prev => {
-        const items = prev[to]
-        const oldIdx = items.findIndex(it => it.uid === active.id)
-        const newIdx = over.id === to ? items.length - 1 : items.findIndex(it => it.uid === over.id)
-        if (oldIdx < 0 || newIdx < 0 || oldIdx === newIdx) return prev
-        return { ...prev, [to]: arrayMove(items, oldIdx, newIdx) }
-      })
-    } else {
-      const overIdx = over.id === to ? undefined : board[to].findIndex(it => it.uid === over.id)
-      move(active.id as string, to, overIdx)
-    }
+    const from = findContainer(active.id as string)
+    if (!from || !to || from !== to) return
+    setBoard(prev => {
+      const items = prev[to]
+      const oldIdx = items.findIndex(it => it.uid === active.id)
+      const newIdx = over.id === to ? items.length - 1 : items.findIndex(it => it.uid === over.id)
+      if (oldIdx < 0 || newIdx < 0 || oldIdx === newIdx) return prev
+      return { ...prev, [to]: arrayMove(items, oldIdx, newIdx) }
+    })
   }
 
   function update(uidStr: string, patch: Partial<Item>) {
@@ -182,17 +231,27 @@ export default function LineupTab() {
 
   if (!game) return null
   const starters = board.starter
+  // #3 同球員去重：已被任一張卡選走的 playerId；Card 下拉只顯示未被選走者（外加自己這張卡已選的）。
+  const usedPlayerIds = new Set(
+    [...board.signup, ...board.starter, ...board.bench]
+      .map(it => it.playerId).filter(Boolean) as string[],
+  )
+  // #1 拖曳浮層內容：目前被拖的卡片。
+  const activeItem = activeId
+    ? [...board.signup, ...board.starter, ...board.bench].find(it => it.uid === activeId) ?? null
+    : null
 
   return (
     <section>
       {!loaded && <p role="status">載入中…</p>}
       {loaded && (
-        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={onDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCorners}
+                    onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={() => setActiveId(null)}>
           <div className="roster-board">
             {/* 報名清單 */}
             <Column id="signup" title="報名清單" hint="不驗證 · 候補池" items={board.signup}>
               {board.signup.map(it => (
-                <Card key={it.uid} item={it} players={players} onPlayer={(pid) => update(it.uid, { playerId: pid, guestName: pid ? undefined : '' })}
+                <Card key={it.uid} item={it} players={players} usedPlayerIds={usedPlayerIds} onPlayer={(pid) => update(it.uid, { playerId: pid, guestName: pid ? undefined : '' })}
                       onGuest={(n) => update(it.uid, { guestName: n })}>
                   <select aria-label="狀態" value={it.status} onChange={e => update(it.uid, { status: e.target.value })}>
                     {STATUS_KEYS.map(k => <option key={k} value={k}>{STATUS_LABELS[k]}</option>)}
@@ -209,10 +268,12 @@ export default function LineupTab() {
             <div className="roster-lineup">
               <Column id="starter" title="先發" hint="欄內上下拖改打序" items={board.starter}>
                 {board.starter.map((it, i) => (
-                  <Card key={it.uid} item={it} players={players} order={i + 1}
+                  <Card key={it.uid} item={it} players={players} usedPlayerIds={usedPlayerIds} order={i + 1}
                         onPlayer={(pid) => update(it.uid, { playerId: pid, guestName: pid ? undefined : '' })}
                         onGuest={(n) => update(it.uid, { guestName: n })}>
-                    <select aria-label="守位" value={it.fieldPosition ?? ''} onChange={e => update(it.uid, { fieldPosition: e.target.value || undefined })}>
+                    <select aria-label="守位" className="pos-select"
+                            data-pos-group={posGroup(it.fieldPosition, players.find(p => p.playerId === it.playerId))}
+                            value={it.fieldPosition ?? ''} onChange={e => update(it.uid, { fieldPosition: e.target.value || undefined })}>
                       <option value="">（守位）</option>
                       {positions.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
@@ -225,7 +286,7 @@ export default function LineupTab() {
 
               <Column id="bench" title="替補" hint="已到、待命" items={board.bench}>
                 {board.bench.map(it => (
-                  <Card key={it.uid} item={it} players={players}
+                  <Card key={it.uid} item={it} players={players} usedPlayerIds={usedPlayerIds}
                         onPlayer={(pid) => update(it.uid, { playerId: pid, guestName: pid ? undefined : '' })}
                         onGuest={(n) => update(it.uid, { guestName: n })}>
                     <Button variant="ghost" onClick={() => move(it.uid, 'starter')}>→先發</Button>
@@ -254,6 +315,15 @@ export default function LineupTab() {
                   </div>}
             </div>
           )}
+
+          <DragOverlay>
+            {activeItem ? (
+              <div className="roster-card roster-card--overlay">
+                <span className="drag-handle">⠿</span>
+                <span>{itemLabel(activeItem, players)}</span>
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       )}
     </section>
@@ -273,10 +343,12 @@ function Column({ id, title, hint, items, children }:
   )
 }
 
-function Card({ item, players, order, onPlayer, onGuest, children }:
-  { item: Item; players: any[]; order?: number; onPlayer: (pid?: string) => void; onGuest: (n: string) => void; children: ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.uid })
-  const style = { transform: CSS.Transform.toString(transform), transition }
+function Card({ item, players, usedPlayerIds, order, onPlayer, onGuest, children }:
+  { item: Item; players: any[]; usedPlayerIds: Set<string>; order?: number; onPlayer: (pid?: string) => void; onGuest: (n: string) => void; children: ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.uid })
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : undefined }
+  // #3：別張卡已選走的球員不顯示在此下拉；自己這張卡已選者仍保留（否則選不回去）。
+  const options = players.filter(p => !usedPlayerIds.has(p.playerId) || p.playerId === item.playerId)
   return (
     <div ref={setNodeRef} style={style} className="roster-card" data-card={keyOf(item)}>
       <span className="drag-handle" {...attributes} {...listeners} aria-label="拖拉" title="拖拉">⠿</span>
@@ -284,7 +356,7 @@ function Card({ item, players, order, onPlayer, onGuest, children }:
       <select aria-label="球員" value={item.playerId ?? '__guest'}
               onChange={e => onPlayer(e.target.value === '__guest' ? undefined : e.target.value)}>
         <option value="__guest">路人…</option>
-        {players.map(p => <option key={p.playerId} value={p.playerId}>{p.displayName}{p.uniformNumber ? ` #${p.uniformNumber}` : ''}</option>)}
+        {options.map(p => <option key={p.playerId} value={p.playerId}>{p.displayName}{p.uniformNumber ? ` #${p.uniformNumber}` : ''}</option>)}
       </select>
       {!item.playerId && <input placeholder="路人名稱" value={item.guestName ?? ''} onChange={e => onGuest(e.target.value)} />}
       {children}

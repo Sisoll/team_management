@@ -12,4 +12,5 @@
 .app-create-btn { background: var(--surface); color: var(--accent-strong); border: none; border-radius: var(--radius-sm);
   padding: 6px 12px; font-weight: 600; font-size: 13px; cursor: pointer; transition: background var(--transition); }
 .app-create-btn:hover { background: var(--accent-soft); }
-.app-content { max-width: 1080px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
+/* 工作面（看板/表格）受惠於更寬版面；表單自身已 max-width 設限，不受影響。放寬以收掉左右大留白。 */
+.app-content { max-width: 1320px; margin: 0 auto; padding: var(--space-5) var(--space-4); }

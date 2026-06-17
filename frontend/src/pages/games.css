@@ -28,4 +28,17 @@
   background: var(--surface-alt); border-radius: var(--radius-sm); padding: 6px 8px; margin-bottom: 6px; }
 .roster-card .bo { min-width: 1.2em; text-align: center; }
 .drag-handle { cursor: grab; color: var(--muted); touch-action: none; user-select: none; }
+/* #1 拖曳跟手浮層：跟著游標的卡片預覽 */
+.roster-card--overlay { box-shadow: var(--shadow); cursor: grabbing; opacity: 0.95; }
+
+/* #4 守位上色：依 data-pos-group 給守位下拉染色（背景＋邊框＋左側強調條），色票一律走 --pos-* token */
+.pos-select { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 6px; }
+.pos-select[data-pos-group] { border-left-width: 4px; font-weight: 600; }
+.pos-select[data-pos-group="infield"]  { background: var(--pos-infield-soft);  border-color: var(--pos-infield); }
+.pos-select[data-pos-group="outfield"] { background: var(--pos-outfield-soft); border-color: var(--pos-outfield); }
+.pos-select[data-pos-group="catcher"]  { background: var(--pos-catcher-soft);  border-color: var(--pos-catcher); }
+.pos-select[data-pos-group="pitcher"]  { background: var(--pos-pitcher-soft);  border-color: var(--pos-pitcher); }
+.pos-select[data-pos-group="sp"]       { background: var(--pos-sp-soft);       border-color: var(--pos-sp); }
+.pos-select[data-pos-group="rp"]       { background: var(--pos-rp-soft);       border-color: var(--pos-rp); }
+
 @media (max-width: 720px) { .roster-board { grid-template-columns: 1fr; } }
